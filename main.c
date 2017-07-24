@@ -26,7 +26,7 @@ char cButtonPressed = 0;
 char startButtonPressed = 0;
 
 char capslockStatus = 0;
-char capslockBytesSent = 0;
+char capslockBytesSent = 1;
 
 char capslockDataNotRegister = 0;
 
@@ -313,11 +313,13 @@ void WriteESKeyboard ( void )
     register			long		timeout = 100;
     register ULong kbID = 0xC030609;
     UChar		byteToSend;
-    short		byteCount;
+
+
 
 //    if ( REFGLOBAL( controls, keyboardPresent ) &&
 //         (REFGLOBAL( controls, cmdTail ) != REFGLOBAL( controls, cmdHead )) )
-    if( capslockStatus && !capslockBytesSent )
+    
+    if( !capslockBytesSent )
     {
         *(reg)				= kTH + kTR;						// both flags hi
         *(char *)kSerial2	= 0;								// clear serial modes
@@ -350,14 +352,20 @@ void WriteESKeyboard ( void )
             *reg &= 0xF0;										// ensure data lines are 0
             *(char *)kCtl2 |= kDataLines;						// 4 data lines are outputs now
 
-            // REFGLOBAL( controls, cmdTail )++;
-            // REFGLOBAL( controls, cmdTail ) &= kKeybdCmdStatusFifoMask;
-            // byteToSend = REFGLOBAL( controls, cmdBuf )[REFGLOBAL( controls, cmdTail )];
+
+//            REFGLOBAL( controls, cmdTail )++;
+//            REFGLOBAL( controls, cmdTail ) &= kKeybdCmdStatusFifoMask;
+//            byteToSend = REFGLOBAL( controls, cmdBuf )[REFGLOBAL( controls, cmdTail )];
+
 
             if( !capslockDataNotRegister )
                 byteToSend = 0xED;
-            else
-                byteToSend = 0x00000004;
+            else {
+                if( capslockStatus )
+                    byteToSend = 0x00000004;
+                else
+                    byteToSend = 0x00000000;
+            }
 
 
             PutHandshakeNibblePort2(&hshkState, 0);				// 4th nybble = 0 ==> I'm talking to him
@@ -371,6 +379,7 @@ void WriteESKeyboard ( void )
 
             *(char *)kCtl2 &= ~kDataLines;						// 4 data lines are back to being inputs
             *reg = kTH + kTR;									// make sure we leave with TH & TR hi
+
 
             if( capslockDataNotRegister == 1 )
                 capslockBytesSent = 1;
