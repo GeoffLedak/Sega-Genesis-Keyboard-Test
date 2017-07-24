@@ -12,7 +12,8 @@ void readKeyboard();
 
 short GetHandshakeNibblePort2( short* hshkState );
 
-int FindESKeyboard(void);
+int FindESKeyboard( void );
+void ReadESKeyboard ( void );
 
 char xPosition = 4;
 char yPosition = 0;
@@ -116,11 +117,13 @@ void readKeyboard() {
     if ( FindESKeyboard() ) {
 
         put_str("Found ES Keyboard!", 0x0000, 2, 2);
+
+        ReadESKeyboard();
     }
 
 
 
-    // ReadESKeyboard();
+
     // WriteESKeyboard();
 }
 
@@ -141,19 +144,17 @@ typedef unsigned long		ULong;
 
 
 
-int
-FindESKeyboard(void) {
+int FindESKeyboard(void) {
     UChar readBuf[4];
     register UChar*		readScan = readBuf;
-    volatile register UChar* reg = (UChar*) kData2;	// only support keyboard on PORT 2!
+    volatile register UChar* reg = (UChar*) kData2;     // only support keyboard on PORT 2!
     short hshkState;
     register long timeout = 100;
-    // register ULong kbID = REFGLOBAL( controls, keyboardID );
     register ULong kbID = 0xC030609;
 
-    *(reg) = kTH + kTR;					// both flags hi
-    *(char *)kSerial2 = 0;							// clear serial modes
-    *(char *)kCtl2 = kTH + kTR;					// both flags are outputs now
+    *(reg) = kTH + kTR;                                 // both flags hi
+    *(char *)kSerial2 = 0;                              // clear serial modes
+    *(char *)kCtl2 = kTH + kTR;					        // both flags are outputs now
 
     nop; nop;
     *readScan++ = *reg & 0x0F;							// 1st nybble = identifying ID
@@ -192,8 +193,102 @@ FindESKeyboard(void) {
 
 
 
-short
-GetHandshakeNibblePort2( short* hshkState )
+
+#define kESKeycodeData			0
+#define kESControllerEcho		1
+#define kESControllerVersion	2
+
+void
+ReadESKeyboard ( void )
+{
+    UChar		readBuf[4];
+    register			UChar*		readScan = readBuf;
+    volatile register	UChar*		reg = (UChar*) kData2;		// only support keyboard on PORT 2!
+    short		hshkState;
+    UChar		len;
+    UChar		temp;
+    register			long		timeout = 100;
+    register ULong kbID = 0xC030609;
+
+    *(reg)				= kTH + kTR;						// both flags hi
+    *(char *)kSerial2	= 0;								// clear serial modes
+    *(char *)kCtl2		= kTH + kTR;						// both flags are outputs now
+
+    nop; nop;
+    *readScan++ = *reg & 0x0F;								// 1st nybble = identifying ID
+
+    *reg = kTR;												// turn off TH to start hshk seq
+
+    do {
+        *readScan = *reg & 0x0F;
+    }
+    while ( (*readScan != ((kbID >> 16) & 0xF)) && --timeout );		// 2nd nybble has no handshake
+
+    if ( !timeout )
+    {
+        *reg = kTH + kTR;								// make sure we leave with TH & TR hi
+        return;
+    }
+
+    readScan++;
+
+    hshkState = 0;											// start flipping TR
+    *readScan++ = GetHandshakeNibblePort2(&hshkState);		// 3rd nybble = local ID
+    *readScan++ = GetHandshakeNibblePort2(&hshkState);		// 4th nybble = local ID
+
+    if ( *(ULong *) readBuf == kbID )						// found a good Eric Smith Keyboard
+    {
+        len = GetHandshakeNibblePort2(&hshkState);			// 5th nybble = BYTE count, 0-15
+
+        if (len)
+        {
+            temp = GetHandshakeNibblePort2(&hshkState);				// get data type
+            temp <<= 4;
+            temp |= GetHandshakeNibblePort2(&hshkState);
+
+            len--;													// len includes data type byte
+
+            if ( temp == kESKeycodeData )
+            {														// Key Codes follow
+                // readScan = REFGLOBAL( controls, keycodeBuf );
+                while ( len )
+                {
+                    putChar('K');
+                    // REFGLOBAL( controls, keycodeHead )++;						// bump head
+                    // REFGLOBAL( controls, keycodeHead ) &= kKeybdDataFifoMask;	// circular buf
+                    temp = GetHandshakeNibblePort2(&hshkState);
+                    temp <<= 4;
+                    temp |= GetHandshakeNibblePort2(&hshkState);
+                    // readScan[REFGLOBAL( controls, keycodeHead )] = temp;
+                    len--;
+                }
+            }
+            else
+            {														// Status Bytes follow
+                // readScan = REFGLOBAL( controls, statusBuf );
+                while ( len )
+                {
+                    putChar('S');
+                    // REFGLOBAL( controls, statusHead )++;							// bump head
+                    // REFGLOBAL( controls, statusHead ) &= kKeybdCmdStatusFifoMask;	// circular buf
+                    temp = GetHandshakeNibblePort2(&hshkState);
+                    temp <<= 4;
+                    temp |= GetHandshakeNibblePort2(&hshkState);
+                    // readScan[REFGLOBAL( controls, statusHead )] = temp;
+                    len--;
+                }
+            }
+        }
+        *reg = kTH + kTR;								// make sure we leave with TH & TR hi
+    }
+
+}
+
+
+
+
+
+short GetHandshakeNibblePort2( short* hshkState )
 {
     register 			long		timeout = 100;
     volatile register	UChar*		reg = (UChar*) kData2;
