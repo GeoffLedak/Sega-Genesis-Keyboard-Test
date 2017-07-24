@@ -1,0 +1,1 @@
+/usr/bin/cc -g   CMakeFiles/keyboardTest.dir/main.c.o CMakeFiles/keyboardTest.dir/font.c.o  -o keyboardTest 
