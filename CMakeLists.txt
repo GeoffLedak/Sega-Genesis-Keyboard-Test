@@ -3,5 +3,5 @@ project(keyboardTest)
 
 set(CMAKE_C_STANDARD 99)
 
-set(SOURCE_FILES main.c font.c crt0.s hw_md.h hw_md.s sys.h)
+set(SOURCE_FILES main.c font.c crt0.s hw_md.h hw_md.s)
 add_executable(keyboardTest ${SOURCE_FILES})
