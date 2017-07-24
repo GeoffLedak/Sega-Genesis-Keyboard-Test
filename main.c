@@ -7,7 +7,8 @@ void putChar(char character);
 void advanceCursor();
 void putNewline();
 void WaitForVBlank();
-void printDaValue(char someValue);
+void readControllers();
+void readKeyboard();
 
 char xPosition = 4;
 char yPosition = 0;
@@ -20,66 +21,16 @@ char startButtonPressed = 0;
 
 int main(void)
 {
-    short buttons = 0;
+
 	
 	// put_str("A = A, B = B, C = C, Start = newline", 0x0000, 0, 0);
 	put_str("C:\\>", 0x0000, 0, 0);
 
     while ( 1 ) // endless loop
     {
-		buttons = get_pad(0);
-	
-		// check A button
-		if( buttons & SEGA_CTRL_A )
-		{
-			if( !aButtonPressed ) {
-				putChar('A');
-				aButtonPressed = 1;
-			}
-		}
-		else
-		{
-			aButtonPressed = 0;
-		}
-		
-		// check B button
-		if ( buttons & SEGA_CTRL_B )
-		{
-			if( !bButtonPressed ) {
-				putChar('B');
-				bButtonPressed = 1;
-			}
-		}
-		else
-		{
-			bButtonPressed = 0;
-		}
-		
-		// check C button
-		if ( buttons & SEGA_CTRL_C )
-		{
-			if( !cButtonPressed ) {
-				putChar('C');
-				cButtonPressed = 1;
-			}
-		}
-		else
-		{
-			cButtonPressed = 0;
-		}
-		
-		// check Start button
-		if ( buttons & SEGA_CTRL_START )
-		{
-			if( !startButtonPressed ) {
-				putNewline();
-				startButtonPressed = 1;
-			}
-		}
-		else
-		{
-			startButtonPressed = 0;
-		}
+        readControllers();
+
+        readKeyboard();
 		
 
 		
@@ -91,6 +42,74 @@ int main(void)
 	
 	
     return 0;
+}
+
+
+
+void readControllers() {
+
+    short buttons = 0;
+    buttons = get_pad(0);
+
+    // check A button
+    if( buttons & SEGA_CTRL_A )
+    {
+        if( !aButtonPressed ) {
+            putChar('A');
+            aButtonPressed = 1;
+        }
+    }
+    else
+    {
+        aButtonPressed = 0;
+    }
+
+    // check B button
+    if ( buttons & SEGA_CTRL_B )
+    {
+        if( !bButtonPressed ) {
+            putChar('B');
+            bButtonPressed = 1;
+        }
+    }
+    else
+    {
+        bButtonPressed = 0;
+    }
+
+    // check C button
+    if ( buttons & SEGA_CTRL_C )
+    {
+        if( !cButtonPressed ) {
+            putChar('C');
+            cButtonPressed = 1;
+        }
+    }
+    else
+    {
+        cButtonPressed = 0;
+    }
+
+    // check Start button
+    if ( buttons & SEGA_CTRL_START )
+    {
+        if( !startButtonPressed ) {
+            putNewline();
+            startButtonPressed = 1;
+        }
+    }
+    else
+    {
+        startButtonPressed = 0;
+    }
+}
+
+
+
+void readKeyboard() {
+
+
+
 }
 
 
