@@ -11,9 +11,11 @@ void readControllers();
 void readKeyboard();
 
 short GetHandshakeNibblePort2( short* hshkState );
+void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend );
 
 int FindESKeyboard( void );
 void ReadESKeyboard ( void );
+void WriteESKeyboard ( void );
 
 char xPosition = 4;
 char yPosition = 0;
@@ -22,6 +24,23 @@ char aButtonPressed = 0;
 char bButtonPressed = 0;
 char cButtonPressed = 0;
 char startButtonPressed = 0;
+
+char capslockStatus = 0;
+char capslockBytesSent = 0;
+
+char capslockDataNotRegister = 0;
+
+
+void flipCapslock() {
+
+    if( !capslockStatus )
+        capslockStatus = 1;
+    else
+        capslockStatus = 0;
+
+    capslockDataNotRegister = 0;
+    capslockBytesSent = 0;
+}
 
 
 int main(void)
@@ -87,6 +106,7 @@ void readControllers() {
     {
         if( !cButtonPressed ) {
             putChar('C');
+            flipCapslock();
             cButtonPressed = 1;
         }
     }
@@ -113,18 +133,13 @@ void readControllers() {
 
 void readKeyboard() {
 
-
     if ( FindESKeyboard() ) {
 
         put_str("Found ES Keyboard!", 0x0000, 2, 2);
 
         ReadESKeyboard();
+        WriteESKeyboard();
     }
-
-
-
-
-    // WriteESKeyboard();
 }
 
 
@@ -139,6 +154,8 @@ typedef unsigned long		ULong;
 #define kTH			0x40			// controller mode control line
 #define kTR			0x20			// controller handshake request
 #define kTL			0x10			// controller handshack acknowledge
+
+#define	kDataLines	0x0F			// data lines for 3-line hshk communication
 
 #define nop			 __asm__ __volatile__ ("nop\n\t");
 
@@ -198,8 +215,7 @@ int FindESKeyboard(void) {
 #define kESControllerEcho		1
 #define kESControllerVersion	2
 
-void
-ReadESKeyboard ( void )
+void ReadESKeyboard ( void )
 {
     UChar		readBuf[4];
     register			UChar*		readScan = readBuf;
@@ -288,6 +304,87 @@ ReadESKeyboard ( void )
 
 
 
+void WriteESKeyboard ( void )
+{
+    UChar		readBuf[4];
+    register			UChar*		readScan = readBuf;
+    volatile register	UChar*		reg = (UChar*) kData2;			// only support keyboard on PORT 2!
+    short		hshkState;
+    register			long		timeout = 100;
+    register ULong kbID = 0xC030609;
+    UChar		byteToSend;
+    short		byteCount;
+
+//    if ( REFGLOBAL( controls, keyboardPresent ) &&
+//         (REFGLOBAL( controls, cmdTail ) != REFGLOBAL( controls, cmdHead )) )
+    if( capslockStatus && !capslockBytesSent )
+    {
+        *(reg)				= kTH + kTR;						// both flags hi
+        *(char *)kSerial2	= 0;								// clear serial modes
+        *(char *)kCtl2		= kTH + kTR;						// both flags are outputs now
+
+        nop; nop;
+        *readScan++ = *reg & 0x0F;								// 1st nybble = identifying ID
+
+        *reg = kTR;												// turn off TH to start hshk seq
+
+        do {
+            *readScan = *reg & 0x0F;
+        }
+        while ( (*readScan != ((kbID >> 16) & 0xF)) && --timeout );		// 2nd nybble has no handshake
+
+        if ( !timeout )
+        {
+            *reg = kTH + kTR;									// make sure we leave with TH & TR hi
+            return;
+        }
+
+        readScan++;
+
+        hshkState = 0;											// start flipping TR
+        *readScan++ = GetHandshakeNibblePort2(&hshkState);		// 3rd nybble = local ID
+
+
+        if ( (*(ULong *) readBuf & 0xFFFFFF00) == (kbID & 0xFFFFFF00) )		// found a good Eric Smith Keyboard?
+        {
+            *reg &= 0xF0;										// ensure data lines are 0
+            *(char *)kCtl2 |= kDataLines;						// 4 data lines are outputs now
+
+            // REFGLOBAL( controls, cmdTail )++;
+            // REFGLOBAL( controls, cmdTail ) &= kKeybdCmdStatusFifoMask;
+            // byteToSend = REFGLOBAL( controls, cmdBuf )[REFGLOBAL( controls, cmdTail )];
+
+            if( !capslockDataNotRegister )
+                byteToSend = 0xED;
+            else
+                byteToSend = 0x00000004;
+
+
+            PutHandshakeNibblePort2(&hshkState, 0);				// 4th nybble = 0 ==> I'm talking to him
+            PutHandshakeNibblePort2(&hshkState, 2);				// 2 bytes follow; type & data
+
+            PutHandshakeNibblePort2(&hshkState, ((kESKeycodeData & 0xF0)>>4));
+            PutHandshakeNibblePort2(&hshkState, (kESKeycodeData & 0x0F));			// 1st byte = type
+
+            PutHandshakeNibblePort2(&hshkState, ((byteToSend & 0xF0)>>4));
+            PutHandshakeNibblePort2(&hshkState, (byteToSend & 0x0F));				// 2nd byte = data
+
+            *(char *)kCtl2 &= ~kDataLines;						// 4 data lines are back to being inputs
+            *reg = kTH + kTR;									// make sure we leave with TH & TR hi
+
+            if( capslockDataNotRegister == 1 )
+                capslockBytesSent = 1;
+
+            capslockDataNotRegister = 1;
+        }
+    }
+
+}
+
+
+
+
+
 short GetHandshakeNibblePort2( short* hshkState )
 {
     register 			long		timeout = 100;
@@ -327,6 +424,46 @@ short GetHandshakeNibblePort2( short* hshkState )
     return 0xFF;
 }
 
+
+
+
+
+/* By the time we get here, the 4 data lines have been set up as outputs.
+   The caller must ensure that there is nothing in the upper nybble of byteToSend.
+ */
+
+void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend )
+{
+    register 			long		timeout = 100;
+    volatile register	UChar*		reg = (UChar*) kData2;
+
+    if (*hshkState == -1)	// timed out, abort (see below)
+        return;
+
+    *reg = (*reg & 0xF0) | byteToSend;	// up to caller to be sure nothing is in hi nybble
+
+    if ((*hshkState ^= 1) == 0)
+    {
+        *reg |= kTR;					// raise TR, wait for TL high
+        nop; nop;
+        do {}
+        while (!(*reg & kTL) && --timeout);
+        if ( timeout )
+            return;
+    }
+    else
+    {
+        *reg &= ~kTR;					// lower TR, wait for TL low
+        nop; nop;
+        do {}
+        while ((*reg & kTL) && --timeout);
+        if ( timeout )
+            return;
+    }
+
+    // if we got this far, we've timed out. return 0xFFs to abort.
+    *hshkState = -1;
+}
 
 
 
