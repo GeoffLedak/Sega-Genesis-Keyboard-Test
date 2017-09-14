@@ -1,3 +1,0 @@
-/home/sonicblue/Documents/sega-projects/keyboardTest/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/sonicblue/Documents/sega-projects/keyboardTest/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/sonicblue/Documents/sega-projects/keyboardTest/cmake-build-debug/CMakeFiles/keyboardTest.dir
