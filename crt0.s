@@ -143,13 +143,13 @@ hblank:
         rte
 
 vblank:
-        move.l  vblank_vector,-(sp)
-        beq.b   1f
-        rts
-1:
+        movem.l d0-d1/a0-a1,-(sp)
+        jsr _vint_callback
+        movem.l (sp)+, d0-d1/a0-a1
         addq.l  #1,gTicks
-        addq.l  #4,sp
         rte
+
+
 
 
         .text

@@ -20,7 +20,7 @@ all: KeyboardTest.bin clean
 
 KeyboardTest.bin: KeyboardTest.elf
 	$(OBJC) -O binary $< temp.bin
-	dd if=temp.bin of=$@ bs=8K conv=sync
+	dd if=temp.bin of=$@ bs=8k conv=sync
 
 KeyboardTest.elf: $(OBJS)
 	$(CC) $(LINKFLAGS) $(OBJS) $(LIBS) -o KeyboardTest.elf
