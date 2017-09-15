@@ -33,6 +33,114 @@ char capslockBytesSent = 1;
 char capslockDataNotRegister = 0;
 
 
+
+
+const unsigned int scancodeToAscii[] =
+{
+    0,     // 00, unused
+    0,     // 01, F9
+    0,     // 02, unused
+    0,     // 03, F5
+    0,     // 04, F3
+    0,     // 05, F1
+    0,     // 06, F2
+    0,     // 07, F12
+    0,     // 08, unused
+    0,     // 09, F10
+    0,     // 0A, F8
+    0,     // 0B, F6
+    0,     // 0C, F4
+    '\t',  // 0D, TAB
+    0x60,  // 0E, `
+    0,     // 0F, unused
+    0,     // 10, unused
+    0,     // 11, L ALT
+    0,     // 12, L SHFT
+    0,     // 13, unused
+    0,     // 14, L CTRL
+    'q',   // 15, q
+    '1',   // 16, 1
+    0,     // 17, unused
+    0,     // 18, unused
+    0,     // 19, unused
+    'z',   // 1A, z
+    's',   // 1B, s
+    'a',   // 1C, a
+    'w',   // 1D, w
+    '2',   // 1E, 2
+    0,     // 1F, unused
+    0,     // 20, unused
+    'c',   // 21, c
+    'x',   // 22, x
+    'd',   // 23, d
+    0,     // 24, 
+    0,     // 25, 
+    0,     // 26, 
+    0,     // 27, 
+    0,     // 28, 
+    0,     // 29, 
+    0,     // 2A, 
+    0,     // 2B, 
+    0,     // 2C, 
+    0,     // 2D, 
+    0,     // 2E, 
+    0,     // 2F, 
+    0,     // 30, 
+    0,     // 31, 
+    0,     // 32, 
+    0,     // 33, 
+    0,     // 34, 
+    0,     // 35, 
+    0,     // 36, 
+    0,     // 37, 
+    0,     // 38, 
+    0,     // 39, 
+    0,     // 3A, 
+    0,     // 3B, 
+    0,     // 3C, 
+    0,     // 3D, 
+    0,     // 3E, 
+    0,     // 3F, 
+    0,     // 40, 
+    0,     // 41, 
+    0,     // 42, 
+    0,     // 43, 
+    0,     // 44, 
+    0,     // 45, 
+    0,     // 46, 
+    0,     // 47, 
+    0,     // 48, 
+    0,     // 49, 
+    0,     // 4A, 
+    0,     // 4B, 
+    0,     // 4C, 
+    0,     // 4D, 
+    0,     // 4E, 
+    0,     // 4F, 
+    0,     // 50, 
+    0,     // 51, 
+    0,     // 52, 
+    0,     // 53, 
+    0,     // 54, 
+    0,     // 55, 
+    0,     // 56, 
+    0,     // 57, 
+    0,     // 58, 
+    0,     // 59, 
+    0,     // 5A, 
+    0,     // 5B, 
+    0,     // 5C, 
+    0,     // 5D, 
+    0,     // 5E, 
+    0     // 5F, 
+};
+
+unsigned int scancodeTableSize = sizeof(scancodeToAscii) / sizeof(unsigned int);
+
+
+
+
+
 void flipCapslock() {
 
     if( !capslockStatus )
@@ -265,13 +373,24 @@ void ReadESKeyboard ( void )
                 // readScan = REFGLOBAL( controls, keycodeBuf );
                 while ( len )
                 {
-                    putChar('K');
+                    // putChar('K');
+
                     // REFGLOBAL( controls, keycodeHead )++;                        // bump head
                     // REFGLOBAL( controls, keycodeHead ) &= kKeybdDataFifoMask;    // circular buf
                     temp = GetHandshakeNibblePort2(&hshkState);
                     temp <<= 4;
                     temp |= GetHandshakeNibblePort2(&hshkState);
                     // readScan[REFGLOBAL( controls, keycodeHead )] = temp;
+
+                    if(temp < scancodeTableSize)
+                    {
+                        putChar(scancodeToAscii[temp]);
+                    }
+                    else
+                    {
+                        putChar('X');
+                    }
+
                     len--;
                 }
             }
