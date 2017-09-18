@@ -35,7 +35,7 @@ char capslockDataNotRegister = 0;
 
 
 
-const unsigned int scancodeToAscii[] =
+static const unsigned int scancodeToAscii[] =
 {
     0,     // 00, unused
     0,     // 01, F9
