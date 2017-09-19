@@ -35,7 +35,7 @@ char capslockDataNotRegister = 0;
 
 
 
-static const unsigned int scancodeToAscii[] =
+static const unsigned char scancodeToAscii[] =
 {
     0,     // 00, unused
     0,     // 01, F9
@@ -146,7 +146,7 @@ static const unsigned int scancodeToAscii[] =
 
 };
 
-unsigned int scancodeTableSize = sizeof(scancodeToAscii) / sizeof(unsigned int);
+unsigned char scancodeTableSize = sizeof(scancodeToAscii) / sizeof(unsigned char);
 
 
 
