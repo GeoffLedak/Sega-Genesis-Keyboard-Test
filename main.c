@@ -385,6 +385,9 @@ void ReadESKeyboard ( void )
             if ( temp == kESKeycodeData )
             {                                                       // Key Codes follow
                 // readScan = REFGLOBAL( controls, keycodeBuf );
+				
+				unsigned char isBreakCode = 0;
+				
                 while ( len )
                 {
                     // putChar('K');
@@ -396,14 +399,20 @@ void ReadESKeyboard ( void )
                     temp |= GetHandshakeNibblePort2(&hshkState);
                     // readScan[REFGLOBAL( controls, keycodeHead )] = temp;
 
-                    if(temp < scancodeTableSize)
+					if(temp == 0xF0)
+					{
+						isBreakCode = 1;
+					}
+					
+                    else if(!isBreakCode && temp < scancodeTableSize)
                     {
                         putChar(scancodeToAscii[temp]);
                     }
-                    else
-                    {
-                        putChar('X');
-                    }
+					else
+					{
+						isBreakCode = 0;
+					}
+
 
                     len--;
                 }
