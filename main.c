@@ -38,8 +38,6 @@ unsigned char scancodeTableSize = sizeof(scancodeToAscii) / sizeof(unsigned char
 
 
 
-
-
 void flipCapslock() {
 
     if( !capslockStatus )
@@ -223,14 +221,14 @@ int FindESKeyboard(void) {
 
 void ReadESKeyboard ( void )
 {
-    UChar       readBuf[4];
+                        UChar       readBuf[4];
     register            UChar*      readScan = readBuf;
     volatile register   UChar*      reg = (UChar*) kData2;      // only support keyboard on PORT 2!
-    short       hshkState;
-    UChar       len;
-    UChar       temp;
+                        short       hshkState;
+                        UChar       len;
+                        UChar       temp;
     register            long        timeout = 100;
-    register ULong kbID = 0xC030609;
+    register            ULong       kbID = 0xC030609;
 
     *(reg)              = kTH + kTR;                        // both flags hi
     *(char *)kSerial2   = 0;                                // clear serial modes
@@ -273,50 +271,32 @@ void ReadESKeyboard ( void )
             if ( temp == kESKeycodeData )
             {                                                       // Key Codes follow
                 // readScan = REFGLOBAL( controls, keycodeBuf );
-				
-				unsigned char isBreakCode = 0;
-				
+                readScan = ControlGlobals.keycodeBuf;
+
+                // ^ do we need to initialize the control globals to 0 before we use them???
+
                 while ( len )
                 {
-                    // putChar('K');
-
-                    // REFGLOBAL( controls, keycodeHead )++;                        // bump head
-                    // REFGLOBAL( controls, keycodeHead ) &= kKeybdDataFifoMask;    // circular buf
+                    REFGLOBAL( controls, keycodeHead )++;                        // bump head
+                    REFGLOBAL( controls, keycodeHead ) &= kKeybdDataFifoMask;    // circular buf
                     temp = GetHandshakeNibblePort2(&hshkState);
                     temp <<= 4;
                     temp |= GetHandshakeNibblePort2(&hshkState);
-                    // readScan[REFGLOBAL( controls, keycodeHead )] = temp;
-
-					if(temp == 0xF0)
-					{
-						isBreakCode = 1;
-					}
-					
-                    else if(!isBreakCode && temp < scancodeTableSize)
-                    {
-                        putChar(scancodeToAscii[temp]);
-                    }
-					else
-					{
-						isBreakCode = 0;
-					}
-
-
+                    readScan[REFGLOBAL( controls, keycodeHead )] = temp;
                     len--;
                 }
             }
             else
             {                                                       // Status Bytes follow
-                // readScan = REFGLOBAL( controls, statusBuf );
+                readScan = REFGLOBAL( controls, statusBuf );
                 while ( len )
                 {
-                    putChar('S');
-                    // REFGLOBAL( controls, statusHead )++;                         // bump head
-                    // REFGLOBAL( controls, statusHead ) &= kKeybdCmdStatusFifoMask;    // circular buf
+                    REFGLOBAL( controls, statusHead )++;                            // bump head
+                    REFGLOBAL( controls, statusHead ) &= kKeybdCmdStatusFifoMask;   // circular buf
                     temp = GetHandshakeNibblePort2(&hshkState);
                     temp <<= 4;
                     temp |= GetHandshakeNibblePort2(&hshkState);
-                    // readScan[REFGLOBAL( controls, statusHead )] = temp;
+                    readScan[REFGLOBAL( controls, statusHead )] = temp;
                     len--;
                 }
             }

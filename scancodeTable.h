@@ -108,3 +108,26 @@ static const unsigned char scancodeToAscii[] =
     // 83 is the largest value
 
 };
+
+
+
+typedef
+struct ControlGlobals
+{
+    short           controlValues[5];       // 4 controllers, isMulti
+    unsigned char   sysKeysBuf[16];
+    unsigned char   sysKeysHead,sysKeysTail;
+    unsigned char   keycodeBuf[16];
+    unsigned char   keycodeHead,keycodeTail;
+    unsigned char   statusBuf[8];
+    unsigned char   statusHead,statusTail;
+    unsigned char   cmdBuf[8];
+    unsigned char   cmdHead,cmdTail;
+    Boolean         keyboardPresent;
+    char            pad;
+    KeyMappingTable *keyMapTable;
+    unsigned long   keyboardID;
+    unsigned long   keyboardFlags;
+    long            samplePhase;            // not everything each VBL
+    ControllerType  curType;                // routine for reading appropriate multiType
+} ControlGlobals;
