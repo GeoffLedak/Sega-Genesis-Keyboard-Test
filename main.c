@@ -571,23 +571,29 @@ Boolean       specialPending;
                     break;
         
             case kAltKey:
-                    REFGLOBAL( controls, keyboardFlags ) |= kAltDown;
+                    // REFGLOBAL( controls, keyboardFlags ) |= kAltDown;
+                    ControlGlobals.keyboardFlags |= kAltDown;
                     return( kNoKey );
                     break;
         
             case kControlKey:
-                    REFGLOBAL( controls, keyboardFlags ) |= kControlDown;
+                    // REFGLOBAL( controls, keyboardFlags ) |= kControlDown;
+                    ControlGlobals.keyboardFlags |= kControlDown;
                     return( kNoKey );
                     break;
         }
         
-        if ( (map == kCapsLockKey) && !(REFGLOBAL( controls, keyboardFlags ) & kCapsLockDown) )
+        // if ( (map == kCapsLockKey) && !(REFGLOBAL( controls, keyboardFlags ) & kCapsLockDown) )
+        if ( (map == kCapsLockKey) && !(ControlGlobals.keyboardFlags & kCapsLockDown) )
         {
-            REFGLOBAL( controls, keyboardFlags ) |= kCapsLockDown;
-            REFGLOBAL( controls, keyboardFlags ) ^= kCapsLocked;            // flip caps lock state
+            // REFGLOBAL( controls, keyboardFlags ) |= kCapsLockDown;
+            ControlGlobals.keyboardFlags |= kCapsLockDown;
+            // REFGLOBAL( controls, keyboardFlags ) ^= kCapsLocked;            // flip caps lock state
+            ControlGlobals.keyboardFlags ^= kCapsLocked;
             fuck[0] = 0xED;                                                 // hit the LED reg
-            fuck[1] = REFGLOBAL( controls, keyboardFlags ) & kCapsLocked;   // bits [2:0] are caps/num/scroll lock
-            SendCmdToESKeyboard( fuck, 2 );
+            // fuck[1] = REFGLOBAL( controls, keyboardFlags ) & kCapsLocked;   // bits [2:0] are caps/num/scroll lock
+            fuck[1] = ControlGlobals.keyboardFlags & kCapsLocked;
+            // SendCmdToESKeyboard( fuck, 2 );  <------------------- this is commented out; it shouldn't be
             return( kNoKey );
         }
 
