@@ -601,7 +601,8 @@ Boolean       specialPending;
         // Special Keys
         //
 
-        if ( !(REFGLOBAL( controls, keyboardFlags ) & kReturnIsLF) && (map == 0x0A) )
+        // if ( !(REFGLOBAL( controls, keyboardFlags ) & kReturnIsLF) && (map == 0x0A) )
+        if( map == 0x0A )
             map = kEnterKey;
 
         if ( specialPending )
