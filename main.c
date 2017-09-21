@@ -17,6 +17,8 @@ void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend );
 int FindESKeyboard( void );
 void ReadESKeyboard ( void );
 void WriteESKeyboard ( void );
+void SendCmdToESKeyboard( unsigned char *cmdBuf, unsigned char cmdLen );
+unsigned char GetNextHardwareKeyboardChar( void );
 void EmulateJoypadWithKeyboard( void );
 unsigned char GetNextESKeyboardChar( void );
 unsigned char GetNextESKeyboardRawcode( void );
@@ -319,27 +321,36 @@ void ReadESKeyboard ( void )
 
 
 
-void WriteESKeyboard ( void )
-{
-    UChar       readBuf[4];
-    register            UChar*      readScan = readBuf;
-    volatile register   UChar*      reg = (UChar*) kData2;          // only support keyboard on PORT 2!
-    short       hshkState;
-    register            long        timeout = 100;
-    register ULong kbID = 0xC030609;
-    UChar       byteToSend;
-
-
-
-//    if ( REFGLOBAL( controls, keyboardPresent ) &&
-//         (REFGLOBAL( controls, cmdTail ) != REFGLOBAL( controls, cmdHead )) )
+/*
     
-    if( !capslockBytesSent )
-    {
+    3   C   6   0   <len>   <hi nyb>   <low nyb> ....
+                ^   \____________________________..../
+                |        Same Format as Dat/Status
+                |
+                Driven to tell Eric I have something for him
+                
+*/
+
+    
+void
+WriteESKeyboard ( void )
+{
+                    UChar       readBuf[4];
+register            UChar*      readScan = readBuf;
+volatile register   UChar*      reg = (UChar*) kData2;          // only support keyboard on PORT 2!
+                    short       hshkState;
+register            long        timeout = 100;
+register            ULong       kbID = REFGLOBAL( controls, keyboardID );
+                    UChar       byteToSend;
+                    short       byteCount;
+    
+    // if ( REFGLOBAL( controls, keyboardPresent ) && (REFGLOBAL( controls, cmdTail ) != REFGLOBAL( controls, cmdHead )) )
+    if( ControlGlobals.cmdTail != ControlGlobals.cmdHead )
+    {   
         *(reg)              = kTH + kTR;                        // both flags hi
         *(char *)kSerial2   = 0;                                // clear serial modes
         *(char *)kCtl2      = kTH + kTR;                        // both flags are outputs now
-
+    
         nop; nop;
         *readScan++ = *reg & 0x0F;                              // 1st nybble = identifying ID
 
@@ -347,17 +358,17 @@ void WriteESKeyboard ( void )
 
         do {
             *readScan = *reg & 0x0F;
-        }
-        while ( (*readScan != ((kbID >> 16) & 0xF)) && --timeout );     // 2nd nybble has no handshake
+            }
+            while ( (*readScan != ((kbID >> 16) & 0xF)) && --timeout );     // 2nd nybble has no handshake
 
         if ( !timeout )
         {
             *reg = kTH + kTR;                                   // make sure we leave with TH & TR hi
             return;
         }
-
-        readScan++;
-
+    
+        readScan++;                         
+    
         hshkState = 0;                                          // start flipping TR
         *readScan++ = GetHandshakeNibblePort2(&hshkState);      // 3rd nybble = local ID
 
@@ -367,43 +378,82 @@ void WriteESKeyboard ( void )
             *reg &= 0xF0;                                       // ensure data lines are 0
             *(char *)kCtl2 |= kDataLines;                       // 4 data lines are outputs now
 
-
-//            REFGLOBAL( controls, cmdTail )++;
-//            REFGLOBAL( controls, cmdTail ) &= kKeybdCmdStatusFifoMask;
-//            byteToSend = REFGLOBAL( controls, cmdBuf )[REFGLOBAL( controls, cmdTail )];
-
-
-            if( !capslockDataNotRegister )
-                byteToSend = 0xED;
-            else {
-                if( capslockStatus )
-                    byteToSend = 0x00000004;
-                else
-                    byteToSend = 0x00000000;
-            }
-
+            // REFGLOBAL( controls, cmdTail )++;
+            ControlGlobals.cmdTail ++;
+            // REFGLOBAL( controls, cmdTail ) &= kKeybdCmdStatusFifoMask;
+            ControlGlobals.cmdTail &= kKeybdCmdStatusFifoMask;
+            // byteToSend = REFGLOBAL( controls, cmdBuf )[REFGLOBAL( controls, cmdTail )];
+            byteToSend = ControlGlobals.cmdBuf[ControlGlobals.cmdTail];
 
             PutHandshakeNibblePort2(&hshkState, 0);             // 4th nybble = 0 ==> I'm talking to him
             PutHandshakeNibblePort2(&hshkState, 2);             // 2 bytes follow; type & data
-
-            PutHandshakeNibblePort2(&hshkState, ((kESKeycodeData & 0xF0)>>4));
+            
+            PutHandshakeNibblePort2(&hshkState, ((kESKeycodeData & 0xF0)>>4));      
             PutHandshakeNibblePort2(&hshkState, (kESKeycodeData & 0x0F));           // 1st byte = type
-
-            PutHandshakeNibblePort2(&hshkState, ((byteToSend & 0xF0)>>4));
+            
+            PutHandshakeNibblePort2(&hshkState, ((byteToSend & 0xF0)>>4));      
             PutHandshakeNibblePort2(&hshkState, (byteToSend & 0x0F));               // 2nd byte = data
 
             *(char *)kCtl2 &= ~kDataLines;                      // 4 data lines are back to being inputs
             *reg = kTH + kTR;                                   // make sure we leave with TH & TR hi
-
-
-            if( capslockDataNotRegister == 1 )
-                capslockBytesSent = 1;
-
-            capslockDataNotRegister = 1;
         }
     }
-
+        
 }
+
+
+
+
+
+void SendCmdToESKeyboard( unsigned char *cmdBuf, unsigned char cmdLen )
+{
+unsigned short oldSR;
+
+    while ( cmdLen )
+    {
+
+        // asm {   move.w  sr,oldSR
+        //         move.w  #0x2700,sr
+        //     }
+
+        __asm__ __volatile__ ("move.w  sr, oldSR\n\t"
+                              "move.w  #0x2700, sr\n\t");
+
+        // REFGLOBAL( controls, cmdHead )++;
+        ControlGlobals.cmdHead ++;
+        // REFGLOBAL( controls, cmdHead ) &= kKeybdCmdStatusFifoMask;
+        ControlGlobals.cmdHead &= kKeybdCmdStatusFifoMask;
+        // REFGLOBAL( controls, cmdBuf )[REFGLOBAL( controls, cmdHead )] = *cmdBuf;
+        ControlGlobals.cmdBuf[ControlGlobals.cmdHead] = *cmdBuf;
+        // asm {   move.w  oldSR,sr    }
+        __asm__ __volatile__ ("move.w  oldSR, sr\n\t");
+
+        cmdBuf++;       
+        cmdLen--;
+    }
+}
+
+
+
+
+
+unsigned char GetNextHardwareKeyboardChar( void )
+{
+    // if ( REFGLOBAL( controls, keyboardPresent ) && (REFGLOBAL( controls, sysKeysTail ) != REFGLOBAL( controls, sysKeysHead )) )
+    if( ControlGlobals.sysKeysTail != ControlGlobals.sysKeysHead )
+    {
+        // REFGLOBAL( controls, sysKeysTail )++;
+        ControlGlobals.sysKeysTail ++;
+        // REFGLOBAL( controls, sysKeysTail ) &= kSysKeysFifoMask;
+        ControlGlobals.sysKeysTail &= kSysKeysFifoMask;
+        // return( REFGLOBAL( controls, sysKeysBuf )[REFGLOBAL( controls, sysKeysTail )] );
+        return ControlGlobals.sysKeysBuf[ControlGlobals.sysKeysTail];
+    }
+    else
+        return( kNoKey );
+}
+
+
 
 
 
@@ -593,7 +643,7 @@ Boolean       specialPending;
             fuck[0] = 0xED;                                                 // hit the LED reg
             // fuck[1] = REFGLOBAL( controls, keyboardFlags ) & kCapsLocked;   // bits [2:0] are caps/num/scroll lock
             fuck[1] = ControlGlobals.keyboardFlags & kCapsLocked;
-            // SendCmdToESKeyboard( fuck, 2 );  <------------------- this is commented out; it shouldn't be
+            SendCmdToESKeyboard( fuck, 2 );
             return( kNoKey );
         }
 
