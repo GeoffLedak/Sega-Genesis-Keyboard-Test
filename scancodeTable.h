@@ -48,6 +48,21 @@
 
 
 
+#define kUP                     0x01
+#define kDOWN                   0x02
+#define kLEFT                   0x04
+#define kRIGHT                  0x08
+#define kButtonB                0x10        // note B & C are reversed
+#define kButtonC                0x20
+#define kButtonA                0x40
+#define kStart                  0x80
+#define kButtonZ                0x100
+#define kButtonY                0x200
+#define kButtonX                0x400
+#define kMode                   0x800
+
+
+
 typedef
 struct ControlGlobals
 {
@@ -60,13 +75,13 @@ struct ControlGlobals
     unsigned char   statusHead,statusTail;
     unsigned char   cmdBuf[8];
     unsigned char   cmdHead,cmdTail;
-    Boolean         keyboardPresent;
+    char            keyboardPresent;
     char            pad;
-    KeyMappingTable *keyMapTable;
+    // KeyMappingTable *keyMapTable;
     unsigned long   keyboardID;
     unsigned long   keyboardFlags;
     long            samplePhase;            // not everything each VBL
-    ControllerType  curType;                // routine for reading appropriate multiType
+    // ControllerType  curType;                // routine for reading appropriate multiType
 } ControlGlobals;
 
 
@@ -306,7 +321,7 @@ static const unsigned char scancodeToAsciiShifted[] =
     0,     // 4F, unused
     0,     // 50, unused
     0,     // 51, unused
-    '\",  // 52, '
+    '\"',  // 52, '
     0,     // 53, unused
     '{',   // 54, [
     '+',   // 55, =
