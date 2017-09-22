@@ -22,6 +22,8 @@ void WriteESKeyboard ( void );
 void SendCmdToESKeyboard( unsigned char *cmdBuf, unsigned char cmdLen );
 unsigned char GetNextHardwareKeyboardChar( void );
 void EmulateJoypadWithKeyboard( void );
+long GetHardwareKeyboardFlags( void );
+void SetHardwareKeyboardFlags( long flags );
 unsigned char GetNextESKeyboardChar( void );
 unsigned char GetNextESKeyboardRawcode( void );
 void BackUpKeycodeTail();
@@ -87,9 +89,153 @@ int main(void)
 
 void ReadCharacters()
 {
-	
-	
-	
+    short command = 0;
+
+    char keyPress;
+    short result = 0;
+    unsigned char HWKeypress;
+    long hwflags;
+    
+
+    HWKeypress = GetNextHardwareKeyboardChar();
+
+    switch( HWKeypress )
+    {
+        case 0x08:                              // BS?
+                command = kButtonC;
+                break;
+                
+        case 0x09:                              // Tab?
+                command = kButtonA;
+                HWKeypress = keySwitch;
+                break;
+                
+        case 0x0A:  
+                command = kButtonA;
+                HWKeypress = '\n';
+                break;
+                
+        case 0x1B:                              // ESC?
+                command = kButtonA;
+                HWKeypress = keyCancel;
+                break;
+                                
+        default:
+                if ( HWKeypress != kNoKey )
+                    command = kButtonA;         // fake a button down
+                else
+                {
+                    hwflags = GetHardwareKeyboardFlags();
+                    if ( hwflags & ( kShiftDown | kCapsLocked ) )
+                    {
+                        HWKeypress = keyShift;     
+                    }
+                }
+                break;
+    }
+
+    /*
+    if (command & kLEFT && state->x > kKeyboardLeft)
+    {
+        --state->x;
+        if (state->x == (kKeyboardRight-1)) 
+            SetSegaCursorImage(state->cursor, kSmallKeyboardCursor);
+    }
+    if (command & kRIGHT && state->x < kKeyboardRight)
+    {
+        ++state->x;
+        if (state->x == kKeyboardRight) 
+            SetSegaCursorImage(state->cursor, kLargeKeyboardCursor);
+    }
+    if (command & kUP && state->y > kKeyboardTop)
+        --state->y;
+    if (command & kDOWN && state->y < kKeyboardBottom)
+        ++state->y;
+    
+    if (command & (kLEFT | kRIGHT | kUP | kDOWN))
+        PlayDBFX( kKeyboardMoveSnd, 0, 0 );
+    
+    MoveSegaCursor(state->cursor,
+                state->keyLayout->keyboardX + state->x*kKeyXSize + kKeyboardXOffset,
+                state->keyLayout->keyboardY + state->y*kKeyYSize + kKeyboardYOffset);
+    */
+    
+    // Did the user click the button?
+    if (command & (kButtonA | kButtonB | kButtonC | kStart))
+    {
+
+
+        
+        if (command & kButtonA)
+        {
+            // User typed a character. Find out which key was hit
+            if ( HWKeypress != kNoKey )     // did she type it on the hardware keybd?
+                keyPress = HWKeypress;
+        }
+        
+        // Was it a letter, or a special?
+        if (keyPress >= ' ')
+        {
+            // Letter
+            // if ( !state->measureProc || (*state->measureProc)(state->keyLayout->fields[state->keyLayout->activeField].buffer) )
+            //    TextEditAppend(state->teRefs[state->keyLayout->activeField], 1, &keyPress);
+            putChar(keyPress);
+
+        }
+        else
+        {
+            // Special
+            switch (keyPress)
+            {
+                case keyDelete:
+                        /*
+                        PlayDBFX( kTextDeleteSnd, 0, 0 );
+                        TextEditDelete(state->teRefs[state->keyLayout->activeField], 1);
+                        */
+                        break;
+                        
+                case keyCancel:
+                        /*
+                        PlayDBFX( kTextInputSnd, 0, 0 );
+                        result = -1;
+                        */
+                        break;
+                
+                case keyShift:
+
+                        break;
+                        
+                case keyReturn:
+                        // PlayDBFX( kTextReturnSnd, 0, 0 );
+                        keyPress = '\n';
+                        // TextEditAppend(state->teRefs[state->keyLayout->activeField], 1, &keyPress);
+                        break;
+                        
+                case keySwitch:
+                        /*
+                        PlayDBFX( kTextInputSnd, 0, 0 );
+                        TextEditDeactivate(state->teRefs[state->keyLayout->activeField]);
+                        if (state->hasJizzlers)
+                            StopTextBoxAnimation(JIZZLE_FIELD(state, state->keyLayout->activeField));
+                        
+                        SetFocusField(state->keyLayout,
+                            (state->keyLayout->activeField + 1) % state->keyLayout->fieldCount);
+                        TextEditActivate(state->teRefs[state->keyLayout->activeField]);
+                        if (state->hasJizzlers)
+                            StartTextBoxAnimation(JIZZLE_FIELD(state, state->keyLayout->activeField), 5);
+                        */
+                        break;
+                
+                case keyDone:
+                        // PlayDBFX( kTextInputSnd, 0, 0 );
+                        // result = 1;
+                        break;
+            }
+        }
+    }
+
+    
+
 }
 
 
@@ -482,6 +628,28 @@ void EmulateJoypadWithKeyboard( void )
     // REFGLOBAL( controls, sysKeysBuf )[REFGLOBAL( controls, sysKeysHead )] = key;
     ControlGlobals.sysKeysBuf[ControlGlobals.sysKeysHead] = key;
 
+}
+
+
+
+
+long GetHardwareKeyboardFlags( void )
+{
+    // return( REFGLOBAL( controls, keyboardFlags ) );
+    return ControlGlobals.keyboardFlags;
+}
+
+
+
+void SetHardwareKeyboardFlags( long flags )
+{
+unsigned char fuck[2];
+
+    // REFGLOBAL( controls, keyboardFlags ) = flags;
+    ControlGlobals.keyboardFlags = flags;
+    fuck[0] = 0xED;                     // hit the LED reg
+    fuck[1] = flags & 0x7;              // bits [2:0] are caps/num/scroll lock
+    SendCmdToESKeyboard( fuck, 2 );
 }
 
 

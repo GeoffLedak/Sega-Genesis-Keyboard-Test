@@ -39,6 +39,15 @@
 
 
 
+#define keyDelete               1
+#define keyCancel               2
+#define keyShift                3
+#define keyReturn               4
+#define keySwitch               5
+#define keyDone                 6
+
+
+
 typedef
 struct ControlGlobals
 {
@@ -160,7 +169,44 @@ static const unsigned char scancodeToAscii[] =
     0,     // 5C, unused
     '\\',  // 5D, \ backslash
     0,     // 5E, unused
-    0      // 5F, unused
+    0,     // 5F, unused
+    0,     // 60
+    0,     // 61
+    0,     // 62
+    0,     // 63
+    0,     // 64
+    0,     // 65
+    0x08,  // 66, BKSP
+    0,     // 67
+    0,     // 68
+    0,     // 69
+    0,     // 6A
+    0,     // 6B
+    0,     // 6C
+    0,     // 6D
+    0,     // 6E
+    0,     // 6F
+    0,     // 70
+    0,     // 71
+    0,     // 72
+    0,     // 73
+    0,     // 74
+    0,     // 75
+    0x1B,  // 76, ESC
+    0,     // 77
+    0,     // 78
+    0,     // 79
+    0,     // 7A
+    0,     // 7B
+    0,     // 7C
+    0,     // 7D
+    0,     // 7E
+    0,     // 7F
+    0,     // 80
+    0,     // 81
+    0,     // 82
+    0      // 83
+
 
     // keypad 1 starts at 69, goes up into 70?
     // esc is 76
@@ -273,7 +319,43 @@ static const unsigned char scancodeToAsciiShifted[] =
     0,     // 5C, unused
     '|',  // 5D, \ backslash
     0,     // 5E, unused
-    0      // 5F, unused
+    0,     // 5F, unused
+    0,     // 60
+    0,     // 61
+    0,     // 62
+    0,     // 63
+    0,     // 64
+    0,     // 65
+    0x08,  // 66, BKSP
+    0,     // 67
+    0,     // 68
+    0,     // 69
+    0,     // 6A
+    0,     // 6B
+    0,     // 6C
+    0,     // 6D
+    0,     // 6E
+    0,     // 6F
+    0,     // 70
+    0,     // 71
+    0,     // 72
+    0,     // 73
+    0,     // 74
+    0,     // 75
+    0x1B,  // 76, ESC
+    0,     // 77
+    0,     // 78
+    0,     // 79
+    0,     // 7A
+    0,     // 7B
+    0,     // 7C
+    0,     // 7D
+    0,     // 7E
+    0,     // 7F
+    0,     // 80
+    0,     // 81
+    0,     // 82
+    0      // 83
 
     // keypad 1 starts at 69, goes up into 70?
     // esc is 76
