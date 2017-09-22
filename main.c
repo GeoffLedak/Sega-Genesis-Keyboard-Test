@@ -30,8 +30,8 @@ void BackUpKeycodeTail();
 
 void _vint_callback();
 
-char xPosition = 4;
-char yPosition = 0;
+char xPosition = 2;
+char yPosition = 1;
 
 char aButtonPressed = 0;
 char bButtonPressed = 0;
@@ -50,7 +50,7 @@ int main(void)
     // 0x4000 = red
 
 	// put_str("A = A, B = B, C = C, Start = newline", 0x0000, 0, 0);
-	put_str("C:\\>", 0x2000, 0, 0);
+	put_str("C:\\>", 0x2000, 2, 1);
 
     while ( 1 ) // endless loop
     {
@@ -976,14 +976,14 @@ void advanceCursor()
 {
 	xPosition++;
 
-	if( xPosition > 39 )
+	if( xPosition > 37 )
 	{
-		xPosition = 0;
+		xPosition = 2;
 		yPosition++;
 		
-		if( yPosition > 27 )
+		if( yPosition > 26 )
 		{
-			yPosition = 0;
+			yPosition = 1;
 		}
 	}
 }
@@ -998,12 +998,12 @@ void putChar(char character)
 
 void putNewline()
 {
-	xPosition = 0;
+	xPosition = 2;
 	yPosition++;
 	
-	if( yPosition > 27 )
+	if( yPosition > 26 )
 	{
-		yPosition = 0;
+		yPosition = 1;
 	}
 }
 
