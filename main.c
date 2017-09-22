@@ -38,30 +38,9 @@ char bButtonPressed = 0;
 char cButtonPressed = 0;
 char startButtonPressed = 0;
 
-char capslockStatus = 0;
-char capslockBytesSent = 1;
-
-char capslockDataNotRegister = 0;
-
-
 unsigned char scancodeTableSize = sizeof(scancodeToAscii) / sizeof(unsigned char);
 
-
 ControlGlobals ControlGlobalz;
-
-
-
-void flipCapslock() {
-
-    if( !capslockStatus )
-        capslockStatus = 1;
-    else
-        capslockStatus = 0;
-
-    capslockDataNotRegister = 0;
-    capslockBytesSent = 0;
-}
-
 
 
 int main(void)
@@ -279,7 +258,6 @@ void readControllers() {
     {
         if( !cButtonPressed ) {
             putChar('C');
-            flipCapslock();
             cButtonPressed = 1;
         }
     }
