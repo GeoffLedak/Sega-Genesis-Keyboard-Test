@@ -177,7 +177,7 @@ static const unsigned char scancodeToAscii[] =
     '=',   // 55, =
     0,     // 56, unused
     0,     // 57, unused
-    0,     // 58, caps capslock
+    kCapsLockKey,     // 58, caps capslock
     kShiftKey,     // 59, R SHFT
     0x0A,     // 5A, ENTER
     ']',   // 5B, ]
@@ -327,7 +327,7 @@ static const unsigned char scancodeToAsciiShifted[] =
     '+',   // 55, =
     0,     // 56, unused
     0,     // 57, unused
-    0,     // 58, caps capslock
+    kCapsLockKey,     // 58, caps capslock
     kShiftKey,     // 59, R SHFT
     0x0A,     // 5A, ENTER
     '}',   // 5B, ]
