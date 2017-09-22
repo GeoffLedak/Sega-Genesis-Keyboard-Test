@@ -4,6 +4,8 @@
 #include "hw_md.h"
 #include "scancodeTable.h"
 
+void ReadCharacters();
+
 void putChar(char character);
 void advanceCursor();
 void putNewline();
@@ -68,6 +70,9 @@ int main(void)
 
     while ( 1 ) // endless loop
     {
+		
+		ReadCharacters();
+		
 
 
 		WaitForVBlank();
@@ -76,6 +81,15 @@ int main(void)
 	
 	
     return 0;
+}
+
+
+
+void ReadCharacters()
+{
+	
+	
+	
 }
 
 
