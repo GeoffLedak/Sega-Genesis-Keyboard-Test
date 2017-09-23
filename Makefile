@@ -14,7 +14,7 @@ ASFLAGS = -m68000 --register-prefix-optional
 LIBS = -L$(GENDEV)/m68k-elf/lib -L$(GENDEV)/m68k-elf/m68k-elf/lib -lc -lgcc -lnosys
 LINKFLAGS = -T $(GENDEV)/ldscripts/md.ld -Wl,-Map=output.map -nostdlib
 
-OBJS = crt0.o main.o hw_md.o font.o
+OBJS = crt0.o main.o hw_md.o font_cga.o
 
 all: KeyboardTest.bin clean
 

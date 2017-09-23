@@ -114,7 +114,7 @@ init_hardware:
         move.w  #0x8F02,(a4)            /* INC = 2 */
         move.l  #0x40000000,(a4)        /* write VRAM address 0 */
         lea     font_data,a0
-        move.w  #0x6B*8-1,d2
+        move.w  #0x100*8-1,d2           /* 0x100 = 256, 256 = number of characters in the cga font */
 7:
         move.l  (a0)+,d0                /* font fg mask */
         move.l  d0,d1
@@ -320,7 +320,6 @@ put_str:
         move.l  d1,4(a1)                /* write VRAM at location of cursor in plane B */
 1:
         move.b  (a0)+,d0
-        subi.b  #0x20,d0                /* font starts at space */
         move.w  d0,(a1)                 /* set pattern name for character */
         tst.b   (a0)
         bne.b   1b
@@ -348,7 +347,6 @@ put_chr:
 
         move.l  a0,d1
         move.b  d1,d0
-        subi.b  #0x20,d0                /* font starts at space */
         move.w  d0,(a1)                 /* set pattern name for character */
         rts
 
