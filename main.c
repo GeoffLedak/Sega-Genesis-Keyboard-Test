@@ -52,6 +52,8 @@ int main(void)
 	// put_str("A = A, B = B, C = C, Start = newline", 0x0000, 0, 0);
 	put_str("C:\\>", 0x2000, 2, 1);
 
+    drawBoxes();
+
     while ( 1 ) // endless loop
     {
 		
@@ -65,6 +67,13 @@ int main(void)
 	
 	
     return 0;
+}
+
+
+
+void drawBoxes()
+{
+    put_str("\xCD\xCD\xCD", 0x0000, 4, 10);
 }
 
 

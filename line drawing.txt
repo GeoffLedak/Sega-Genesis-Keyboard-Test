@@ -1,0 +1,33 @@
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+M MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM M
+M M╔══════════════════╤═══════════════╗M M
+M M║Keyboard not found│Controller 1   ║M M
+M M║find1 find2 find3 │ABC toggle LEDs║M M
+M M║                  │Num    OFF     ║M M
+M M                   │Caps   OFF     ║M M
+M M                   │Scroll OFF     ║M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M M                                    M M
+M MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM M
+MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+
+
+40 x 28
