@@ -14,18 +14,18 @@ M M│                                  │M M
 M M│           Packet Logger          │M M
 M M│                                  │M M
 M M└──────────────────────────────────┘M M
-M M                                    M M
-M M                                    M M
-M M                                    M M
-M M                                    M M
-M M                                    M M
-M M              Console               M M
-M M                                    M M
-M M                                    M M
-M M                                    M M
-M M                                    M M
-M M                                    M M
-M M                                    M M
+M M┌──────────────────────────────────┐M M
+M M│                                  │M M
+M M│                                  │M M
+M M│                                  │M M
+M M│                                  │M M
+M M│             Console              │M M
+M M│                                  │M M
+M M│                                  │M M
+M M│                                  │M M
+M M│                                  │M M
+M M│                                  │M M
+M M└──────────────────────────────────┘M M
 M MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM M
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 
