@@ -1,14 +1,14 @@
 MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 M MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM M
-M M╔══════════════════╤═══════════════╗M M
-M M║Keyboard not found│Controller 1   ║M M
-M M║f1 f2 f3 f4  ---- │A Num    OFF   ║M M     <---setF1(), setF2(), etc...
-M M║timeout at f1     │B Caps   OFF   ║M M     <---setFindTimeout();
-M M║r1 r2 r3 r4 r5 r6 │C Scroll OFF   ║M M
-M M║timeout at r1     │               ║M M
-M M║w1 w2 w3 w4 w5 w6 │               ║M M
-M M║timeout at w1     │               ║M M
-M M╚══════════════════╧═══════════════╝M M
+M M╔═══════════════╤══════════════════╗M M
+M M║LED control    │Keyboard not found║M M
+M M║A Num    OFF   │f1 f2 f3 f4  ---- ║M M     <---setF1(), setF2(), etc...
+M M║B Caps   OFF   │timeout at f1     ║M M     <---setFindTimeout();
+M M║C Scroll OFF   │r1 r2 r3 r4 r5 r6 ║M M
+M M╟───────────────┤timeout at r1     ║M M
+M M║Shift    DOWN  │w1 w2 w3 w4 w5 w6 ║M M
+M M║Capslock OFF   │timeout at w1     ║M M
+M M╚═══════════════╧══════════════════╝M M
 M M┌──────────────────────────────────┐M M
 M M│                                  │M M
 M M│           Packet Logger          │M M
