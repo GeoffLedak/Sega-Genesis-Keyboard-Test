@@ -50,7 +50,7 @@ int main(void)
     // 0x4000 = red
 
 	// put_str("A = A, B = B, C = C, Start = newline", 0x0000, 0, 0);
-	put_str("C:\\>", 0x2000, 2, 1);
+	// put_str("C:\\>", 0x2000, 2, 1);
 
     drawBoxes();
 
@@ -73,7 +73,30 @@ int main(void)
 
 void drawBoxes()
 {
-    put_str("\xCD\xCD\xCD", 0x0000, 4, 10);
+    put_str("\xC9\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xD1\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBB", 0x0000, 2, 2);
+	put_str("\xBA                  \xB3               \xBA", 0x0000, 2, 3);
+	put_str("\xBA                  \xB3               \xBA", 0x0000, 2, 4);
+	put_str("\xBA                  \xB3               \xBA", 0x0000, 2, 5);
+	put_str("\xBA                  \xB3               \xBA", 0x0000, 2, 6);
+	put_str("\xBA                  \xB3               \xBA", 0x0000, 2, 7);
+	put_str("\xBA                  \xB3               \xBA", 0x0000, 2, 8);
+	put_str("\xC8\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCF\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBC", 0x0000, 2, 9);
+	put_str("\xDA\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xBF", 0x0000, 2, 10);
+	put_str("\xB3                                  \xB3", 0x0000, 2, 11);
+	put_str("\xB3                                  \xB3", 0x0000, 2, 12);
+	put_str("\xB3                                  \xB3", 0x0000, 2, 13);
+	put_str("\xB3                                  \xB3", 0x0000, 2, 14);
+	put_str("\xB3                                  \xB3", 0x0000, 2, 15);
+	put_str("\xB3                                  \xB3", 0x0000, 2, 16);
+	put_str("\xC0\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xD9", 0x0000, 2, 17);
+	put_str("\xDA\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xBF", 0x0000, 2, 18);
+	put_str("\xB3                                  \xB3", 0x0000, 2, 19);
+	put_str("\xB3                                  \xB3", 0x0000, 2, 20);
+	put_str("\xB3                                  \xB3", 0x0000, 2, 21);
+	put_str("\xB3                                  \xB3", 0x0000, 2, 22);
+	put_str("\xB3                                  \xB3", 0x0000, 2, 23);
+	put_str("\xB3                                  \xB3", 0x0000, 2, 24);
+	put_str("\xC0\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xD9", 0x0000, 2, 25);
 }
 
 
@@ -295,12 +318,15 @@ void readKeyboard() {
 
     if ( FindESKeyboard() ) {
 
-        put_str("Found ES Keyboard!", 0x0000, 2, 2);
+        put_str("Found ES Keyboard!", 0x2000, 3, 3);
 
         ReadESKeyboard();
         WriteESKeyboard();
         EmulateJoypadWithKeyboard();
     }
+	else{
+		put_str("Keyboard not found", 0x4000, 3, 3);
+	}
 }
 
 
