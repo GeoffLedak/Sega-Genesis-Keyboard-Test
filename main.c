@@ -30,6 +30,8 @@ void BackUpKeycodeTail();
 
 void _vint_callback();
 
+void setDebugFlag(char *flagName, char flagLine, char flagNumber, char pass);
+
 char xPosition = 3;
 char yPosition = 19;
 
@@ -370,9 +372,14 @@ int FindESKeyboard(void) {
 
     if ( !timeout )
     {
+        // FAIL f1
+        setDebugFlag("f1", 4, 1, 0);
         *reg = kTH + kTR;                               // make sure we leave with TH & TR hi
         return ( 0 );
     }
+
+    // PASS f1
+    setDebugFlag("f1", 4, 1, 1);
 
     readScan++;
 
@@ -1038,6 +1045,19 @@ void putNewline()
 	{
 		yPosition = 19;
 	}
+}
+
+
+void setDebugFlag(char *flagName, char flagLine, char flagNumber, char pass)
+{
+    if( pass )
+    {
+        put_str(flagName, 0x2000, 18 + flagNumber, flagLine);
+    }
+    else
+    {
+        put_str(flagName, 0x4000, 18 + flagNumber, flagLine);
+    }
 }
 
 
