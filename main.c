@@ -394,9 +394,15 @@ int FindESKeyboard(void) {
     *reg = kTH + kTR;                                   // make sure we leave with TH & TR hi
 
     if ( *(ULong *) readBuf == kbID )                   // found a good Eric Smith Keyboard
+    {
+        hexToAscii(readBuf);
         return ( 1 );
+    }
     else
+    {
+        hexToAscii(readBuf);
         return ( 0 );
+    }
 }
 
 
@@ -1058,6 +1064,34 @@ void setDebugFlag(char *flagName, char flagLine, char flagNumber, char pass)
     {
         put_str(flagName, 0x4000, 18 + flagNumber, flagLine);
     }
+}
+
+
+void hexToAscii(unsigned char *sandwiches)
+{
+    // C369;
+
+    unsigned char stuff[5];
+    unsigned char i;
+
+    for( i = 0; i < 5; i++ )
+    {
+        if( i == 4 )
+            stuff[i] = '\0';
+        else
+        {
+            if( sandwiches[i] >= 0x00 && sandwiches[i] <= 0x09 )
+                stuff[i] = sandwiches[i] + 0x30;
+            else if( sandwiches[i] >= 0x0A && sandwiches[i] <= 0x0F )
+            {
+                stuff[i] = sandwiches[i] + 0x37;
+            }
+            else
+                stuff[i] = '-';
+        }
+    }
+
+    put_str(stuff, 0x0000, 32, 4);
 }
 
 
