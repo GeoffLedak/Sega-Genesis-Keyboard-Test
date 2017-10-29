@@ -13,7 +13,7 @@ void WaitForVBlank();
 void readControllers();
 void readKeyboard();
 
-short GetHandshakeNibblePort2( short* hshkState );
+short GetHandshakeNibblePort2( short* hshkState, char *flagName, char flagLine, char flagNumber, char pass );
 void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend );
 
 int FindESKeyboard( void );
@@ -372,20 +372,20 @@ int FindESKeyboard(void) {
 
     if ( !timeout )
     {
-        // FAIL f1
-        setDebugFlag("f1", 4, 1, 0);
+        // FAIL f2
+        setDebugFlag("f2", 4, 1, 0);
         *reg = kTH + kTR;                               // make sure we leave with TH & TR hi
         return ( 0 );
     }
 
-    // PASS f1
-    setDebugFlag("f1", 4, 1, 1);
+    // PASS f2
+    setDebugFlag("f2", 4, 1, 1);
 
     readScan++;
 
     hshkState = 0;                                      // start flipping TR
-    *readScan++ = GetHandshakeNibblePort2(&hshkState);  // 3rd nybble = local ID
-    *readScan = GetHandshakeNibblePort2(&hshkState);    // 4th nybble = local ID
+    *readScan++ = GetHandshakeNibblePort2(&hshkState, "f3");  // 3rd nybble = local ID
+    *readScan = GetHandshakeNibblePort2(&hshkState, "f4");    // 4th nybble = local ID
 
     *reg |= kTH;                                        // abort the transaction
 
@@ -918,7 +918,7 @@ unsigned char GetNextESKeyboardRawcode( void )
 
 
 
-short GetHandshakeNibblePort2( short* hshkState )
+short GetHandshakeNibblePort2( short* hshkState, char *flagName, char flagLine, char flagNumber, char pass )
 {
     register            long        timeout = 100;
     volatile register   UChar*      reg = (UChar*) kData2;
