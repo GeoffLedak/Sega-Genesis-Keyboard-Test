@@ -9,5 +9,19 @@ Create 4 char buffers:
 
 
 
+Create flags that indicate if each screen window needs to be redrawn
 
-in main loop
+Check flags during vblank, draw them if they need to be redrawn
+
+when printing characters in bottom window, add additional logic that checks if you're at the end of the last line.
+if you are, shift the entire array vertical and resume at new line at bottom.
+
+packet loggers should shift vertical too.
+
+
+-----
+
+should anything go in the main loop rather than during vblank interrupt?
+
+draw during vblank? read keyboard during vblank? read keyboard as fast as we can during main loop?
+what would dos do? That is the question.
