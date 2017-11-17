@@ -384,8 +384,8 @@ int FindESKeyboard(void) {
     readScan++;
 
     hshkState = 0;                                      // start flipping TR
-    *readScan++ = GetHandshakeNibblePort2(&hshkState, "f3", 4, 3);  // 3rd nybble = local ID
-    *readScan = GetHandshakeNibblePort2(&hshkState, "f4", 4, 5);    // 4th nybble = local ID
+    *readScan++ = GetHandshakeNibblePort2(&hshkState, "f3", 4, 4);  // 3rd nybble = local ID
+    *readScan = GetHandshakeNibblePort2(&hshkState, "f4", 4, 7);    // 4th nybble = local ID
 
     *reg |= kTH;                                        // abort the transaction
 

@@ -1,0 +1,13 @@
+Create 4 char buffers:
+
+
+|  15 x 6   |   18 x 6  |
+
+|        34 x 6         |
+
+|        34 x 6         |
+
+
+
+
+in main loop
