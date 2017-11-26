@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "hw_md.h"
+#include "structures.h"
 #include "scancodeTable.h"
 
 void ReadCharacters();
@@ -44,9 +45,50 @@ unsigned char scancodeTableSize = sizeof(scancodeToAscii) / sizeof(unsigned char
 
 ControlGlobals ControlGlobalz;
 
+textbox_t console;
+// console.charBuffer = malloc( sizeof(unsigned char) );
+
+
+
+void drawWindow(textbox_t* self)
+{
+	//  *(img.pixels+img.height*i+j) represents img.pixels[i][j].
+
+
+	// **(*self.charBuffer + *self.height * i + j)
+
+	*(self->charBuffer + self->height * 2 + 3) = 'K';
+
+
+	int i, j;
+
+
+	for( i = 0; i < self->width; i++ )
+	{
+		for( j = 0; j < self->height; j++ )
+		{
+			put_chr(*(self->charBuffer + self->height * i + j), 0x0000, self->x + i, self->y + j);
+		}
+
+	}
+	
+
+
+}
+
+
 
 int main(void)
 {
+	console.x = 3;
+	console.y = 19;
+	console.width = 32;
+	console.height = 4;
+	console.cursor = 0;
+	console.self = &console;
+	console.charBuffer = malloc( sizeof(unsigned char) * console.width * console.height );
+
+
     // 0x0000 = grey
     // 0x2000 = green
     // 0x4000 = red
@@ -58,6 +100,7 @@ int main(void)
     {
 		
 		ReadCharacters();
+		drawWindow(console.self);
 		
 
 
