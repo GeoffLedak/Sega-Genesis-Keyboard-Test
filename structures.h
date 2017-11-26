@@ -3,7 +3,8 @@ typedef struct {
 	unsigned char y;
 	unsigned char width;
 	unsigned char height;
-	unsigned char cursor;
+	unsigned char cursorX;
+	unsigned char cursorY;
 	struct textbox_t* self;
 	unsigned char *charBuffer;
 } textbox_t;

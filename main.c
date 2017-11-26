@@ -5,6 +5,8 @@
 #include "structures.h"
 #include "scancodeTable.h"
 
+unsigned char globalCounter = 0;
+
 void ReadCharacters();
 
 void putChar(char character);
@@ -50,6 +52,40 @@ textbox_t console;
 
 
 
+
+void advanceWindowCursor(textbox_t* self)
+{
+	self->cursorX++;
+
+	if( self->cursorX > (self->x + self->width) )
+	{
+		self->cursorX = self->x;
+		self->cursorY++;
+
+		if( self->cursorY > (self->y + self->height) )
+		{
+			self->cursorY = self->y;
+		}
+	}
+}
+
+
+
+void drawCursor(textbox_t* self)
+{
+
+	if( globalCounter > 0 && globalCounter < 30 )
+		put_chr(219, 0x0000, 2, 2);
+	else
+		put_chr(' ', 0x0000, 2, 2);
+
+
+
+
+}
+
+
+
 void drawWindow(textbox_t* self)
 {
 	//  *(img.pixels+img.height*i+j) represents img.pixels[i][j].
@@ -69,12 +105,13 @@ void drawWindow(textbox_t* self)
 		{
 			put_chr(*(self->charBuffer + self->height * i + j), 0x0000, self->x + i, self->y + j);
 		}
-
 	}
-	
 
-
+	drawCursor(self);
 }
+
+
+
 
 
 
@@ -84,7 +121,8 @@ int main(void)
 	console.y = 19;
 	console.width = 32;
 	console.height = 4;
-	console.cursor = 0;
+	console.cursorX = console.x;
+	console.cursorY = console.y;
 	console.self = &console;
 	console.charBuffer = malloc( sizeof(unsigned char) * console.width * console.height );
 
@@ -98,6 +136,8 @@ int main(void)
 
     while ( 1 ) // endless loop
     {
+		if( globalCounter >= 60 ) globalCounter = 0;
+		else globalCounter++;
 		
 		ReadCharacters();
 		drawWindow(console.self);
