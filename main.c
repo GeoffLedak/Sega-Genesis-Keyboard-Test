@@ -147,7 +147,7 @@ void drawWindow(textbox_t* self)
 		}
 		*/
 
-		put_chr(*(self->charBuffer + self->height * (self->cursorX - self->x - 1) + (self->cursorY - self->y) ), 0x0000, self->cursorX, self->cursorY);
+		put_chr(*(self->charBuffer + self->height * (self->cursorX - self->x - 1) + (self->cursorY - self->y) ), 0x0000, self->cursorX - 1, self->cursorY);
 
 		self->drawFlag = 0;
 
