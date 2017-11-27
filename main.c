@@ -53,6 +53,9 @@ textbox_t console;
 
 
 
+
+
+
 void advanceWindowCursor(textbox_t* self)
 {
 	self->cursorX++;
@@ -67,6 +70,25 @@ void advanceWindowCursor(textbox_t* self)
 			self->cursorY = self->y;
 		}
 	}
+}
+
+
+
+
+void drawCharToWindow(textbox_t* self, char theChar)
+{
+	// put_chr(theChar, 0x0000, self->cursorX, self->cursorY);
+
+
+	// **(*self.charBuffer + *self.height * i + j)
+
+	*(self->charBuffer + self->height * self->cursorX + self->cursorY) = theChar;
+
+
+
+
+
+	advanceWindowCursor(self);
 }
 
 
@@ -118,7 +140,7 @@ void drawWindow(textbox_t* self)
 int main(void)
 {
 	console.x = 3;
-	console.y = 19;
+	console.y = 0;
 	console.width = 32;
 	console.height = 4;
 	console.cursorX = console.x;
@@ -276,7 +298,15 @@ void ReadCharacters()
             // Letter
             // if ( !state->measureProc || (*state->measureProc)(state->keyLayout->fields[state->keyLayout->activeField].buffer) )
             //    TextEditAppend(state->teRefs[state->keyLayout->activeField], 1, &keyPress);
-            putChar(keyPress);
+
+
+
+
+            // putChar(keyPress);
+
+			drawCharToWindow(console.self, keyPress);
+
+
 
         }
         else
