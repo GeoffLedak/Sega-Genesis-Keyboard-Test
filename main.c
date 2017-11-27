@@ -64,6 +64,7 @@ void advanceWindowCursor(textbox_t* self)
 	{
 		self->cursorX = self->x;
 		self->cursorY++;
+		self->newlineFlag = 1;
 
 		if( self->cursorY >= (self->y + self->height) )
 		{
@@ -147,7 +148,13 @@ void drawWindow(textbox_t* self)
 		}
 		*/
 
-		put_chr(*(self->charBuffer + self->height * (self->cursorX - self->x - 1) + (self->cursorY - self->y) ), 0x0000, self->cursorX - 1, self->cursorY);
+		if(!self->newlineFlag)
+			put_chr(*(self->charBuffer + self->height * (self->cursorX - self->x - 1) + (self->cursorY - self->y) ), 0x0000, self->cursorX - 1, self->cursorY);
+		else
+		{
+			put_chr(*(self->charBuffer + self->height * (self->cursorX - self->x) + (self->cursorY - self->y) ), 0x0000, self->cursorX, self->cursorY);
+			self->newlineFlag = 0;
+		}
 
 		self->drawFlag = 0;
 
@@ -165,6 +172,7 @@ void drawWindow(textbox_t* self)
 
 int main(void)
 {
+	console.newlineFlag = 0;
 	console.drawFlag = 0;
 	console.x = 3;
 	console.y = 11;
