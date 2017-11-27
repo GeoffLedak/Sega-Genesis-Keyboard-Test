@@ -60,16 +60,18 @@ void advanceWindowCursor(textbox_t* self)
 {
 	self->cursorX++;
 
-	if( self->cursorX > (self->x + self->width) )
+	if( self->cursorX >= (self->x + self->width) )
 	{
 		self->cursorX = self->x;
 		self->cursorY++;
 
-		if( self->cursorY > (self->y + self->height) )
+		if( self->cursorY >= (self->y + self->height) )
 		{
 			self->cursorY = self->y;
 		}
 	}
+
+	drawCursor(self);
 }
 
 
@@ -104,10 +106,16 @@ void drawCharToWindow(textbox_t* self, char theChar)
 void drawCursor(textbox_t* self)
 {
 
+/*
 	if( globalCounter > 0 && globalCounter < 30 )
 		put_chr(219, 0x0000, 2, 2);
 	else
 		put_chr(' ', 0x0000, 2, 2);
+*/
+
+
+	put_chr(219, 0x0000, self->cursorX, self->cursorY);
+
 
 
 
@@ -123,9 +131,11 @@ void drawWindow(textbox_t* self)
 
 	// **(*self.charBuffer + *self.height * i + j)
 
+
 	
 	if(self->drawFlag)
 	{
+		/*
 		int i, j;
 
 		for( i = 0; i < self->width; i++ )
@@ -135,12 +145,17 @@ void drawWindow(textbox_t* self)
 				put_chr(*(self->charBuffer + self->height * i + j), 0x0000, self->x + i, self->y + j);
 			}
 		}
+		*/
+
+		put_chr(*(self->charBuffer + self->height * (self->cursorX - self->x - 1) + (self->cursorY - self->y) ), 0x0000, self->cursorX, self->cursorY);
+
+		self->drawFlag = 0;
+
 	}
 
-	self->drawFlag = 0;
 
 
-	// drawCursor(self);
+
 }
 
 
