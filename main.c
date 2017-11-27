@@ -82,7 +82,15 @@ void drawCharToWindow(textbox_t* self, char theChar)
 
 	// **(*self.charBuffer + *self.height * i + j)
 
-	*(self->charBuffer + self->height * self->cursorX + self->cursorY) = theChar;
+
+
+	// *(self->charBuffer + self->height * self->cursorX + self->cursorY) = theChar;
+
+
+	self->drawFlag = 1;
+
+	*(self->charBuffer + self->height * (self->cursorX - self->x) + (self->cursorY - self->y)) = theChar;
+
 
 
 
@@ -115,21 +123,24 @@ void drawWindow(textbox_t* self)
 
 	// **(*self.charBuffer + *self.height * i + j)
 
-	*(self->charBuffer + self->height * 2 + 3) = 'K';
-
-
-	int i, j;
-
-
-	for( i = 0; i < self->width; i++ )
+	
+	if(self->drawFlag)
 	{
-		for( j = 0; j < self->height; j++ )
+		int i, j;
+
+		for( i = 0; i < self->width; i++ )
 		{
-			put_chr(*(self->charBuffer + self->height * i + j), 0x0000, self->x + i, self->y + j);
+			for( j = 0; j < self->height; j++ )
+			{
+				put_chr(*(self->charBuffer + self->height * i + j), 0x0000, self->x + i, self->y + j);
+			}
 		}
 	}
 
-	drawCursor(self);
+	self->drawFlag = 0;
+
+
+	// drawCursor(self);
 }
 
 
@@ -139,10 +150,11 @@ void drawWindow(textbox_t* self)
 
 int main(void)
 {
+	console.drawFlag = 0;
 	console.x = 3;
-	console.y = 0;
-	console.width = 32;
-	console.height = 4;
+	console.y = 11;
+	console.width = 34;
+	console.height = 6;
 	console.cursorX = console.x;
 	console.cursorY = console.y;
 	console.self = &console;
@@ -157,16 +169,13 @@ int main(void)
     drawBoxes();
 
     while ( 1 ) // endless loop
-    {
-		if( globalCounter >= 60 ) globalCounter = 0;
-		else globalCounter++;
-		
+    {	
 		ReadCharacters();
 		drawWindow(console.self);
 		
 
 
-		WaitForVBlank();
+		// WaitForVBlank();
     }
 	
 	
@@ -1128,6 +1137,9 @@ void _vint_callback()
 {
     readControllers();
     readKeyboard();
+
+	if( globalCounter >= 60 ) globalCounter = 0;
+	else globalCounter++;
 }
 
 
