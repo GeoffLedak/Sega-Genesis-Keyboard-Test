@@ -1,6 +1,7 @@
 typedef struct {
 	char drawFlag;
 	char newlineFlag;
+	char scrollFlag;
 	unsigned char x;
 	unsigned char y;
 	unsigned char width;

@@ -52,6 +52,21 @@ textbox_t console;
 
 
 
+void scrollUp(textbox_t* self)
+{
+    // *(self->charBuffer + self->height * (self->cursorX - self->x) + (self->cursorY - self->y)) = theChar;
+
+    int i, j;
+
+        for( i = 0; i < self->width; i++ )
+        {
+            for( j = 0; j < self->height; j++ )
+            {
+                // put_chr(*(self->charBuffer + self->height * i + j), 0x0000, self->x + i, self->y + j);
+                *(self->charBuffer + self->height * i + j) = *(self->charBuffer + self->height * i + (j + 1) );
+            }
+        }
+}
 
 
 
@@ -68,7 +83,10 @@ void advanceWindowCursor(textbox_t* self)
 
 		if( self->cursorY >= (self->y + self->height) )
 		{
-			self->cursorY = self->y;
+			// self->cursorY = self->y;
+            self->cursorY--;
+            scrollUp(self);
+            self->scrollFlag = 1;
 		}
 	}
 
@@ -129,7 +147,6 @@ void drawWindow(textbox_t* self)
 {
 	//  *(img.pixels+img.height*i+j) represents img.pixels[i][j].
 
-
 	// **(*self.charBuffer + *self.height * i + j)
 
 
@@ -148,7 +165,26 @@ void drawWindow(textbox_t* self)
 		}
 		*/
 
-		if(!self->newlineFlag)
+        if( self->scrollFlag )
+        {
+
+        // DONT ACTUALLY USE THIS SHIT
+
+        int i, j;
+
+        for( i = 0; i < self->width; i++ )
+        {
+            for( j = 0; j < self->height; j++ )
+            {
+                put_chr(*(self->charBuffer + self->height * i + j), 0x0000, self->x + i, self->y + j);
+            }
+        }
+
+        self->scrollFlag = 0;
+
+
+        }
+		else if(!self->newlineFlag)
 			put_chr(*(self->charBuffer + self->height * (self->cursorX - self->x - 1) + (self->cursorY - self->y) ), 0x0000, self->cursorX - 1, self->cursorY);
 		else
 		{
@@ -159,9 +195,6 @@ void drawWindow(textbox_t* self)
 		self->drawFlag = 0;
 
 	}
-
-
-
 
 }
 
@@ -174,6 +207,7 @@ int main(void)
 {
 	console.newlineFlag = 0;
 	console.drawFlag = 0;
+    console.scrollFlag = 0;
 	console.x = 3;
 	console.y = 11;
 	console.width = 34;
