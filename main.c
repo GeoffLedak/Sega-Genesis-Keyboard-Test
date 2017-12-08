@@ -187,7 +187,7 @@ void drawWindow(textbox_t* self)
 
         int i, j;
         unsigned char *point;
-        point = self->scrollBuffer;
+        point = (self->scrollBuffer);
 
         for( j = 0; j < self->height; j++ )
         {
@@ -195,15 +195,16 @@ void drawWindow(textbox_t* self)
             {
                 for( i = 0; i < self->width; i++ )
                 {
-                   *point = *(self->charBuffer + i);
+                   // *point = *(self->charBuffer + i);
+                    *point = 'H';
                    point++;
                 }
 
                 *point = '\0';
 
-                // put_str( self->scrollBuffer, 0x0000, self->x, self->y + j );
+                put_str( self->scrollBuffer, 0x0000, self->x, self->y + j );
 
-                put_str( "MMMMMM", 0x0000, self->x, self->y + j );
+                // put_str( "MMMMMM", 0x0000, self->x, self->y + j );
             }
             else
             {
