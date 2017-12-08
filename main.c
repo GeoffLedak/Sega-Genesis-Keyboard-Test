@@ -145,49 +145,14 @@ void drawCursor(textbox_t* self)
 
 void drawWindow(textbox_t* self)
 {
-	//  *(img.pixels+img.height*i+j) represents img.pixels[i][j].
-
-	// **(*self.charBuffer + *self.height * i + j)
-
-
-	
 	if(self->drawFlag)
 	{
-		/*
-		int i, j;
-
-		for( i = 0; i < self->width; i++ )
-		{
-			for( j = 0; j < self->height; j++ )
-			{
-				put_chr(*(self->charBuffer + self->height * i + j), 0x0000, self->x + i, self->y + j);
-			}
-		}
-		*/
 
         if( self->scrollFlag )
         {
 
-        // DONT ACTUALLY USE THIS SHIT
-        // Use string drawing method instead for each line
-
-        // int i, j;
-
-        // for( i = 0; i < self->width; i++ )
-        // {
-        //     for( j = 0; j < self->height; j++ )
-        //     {
-        //         put_chr(*(self->charBuffer + self->height * i + j), 0x0000, self->x + i, self->y + j);
-        //     }
-        // }
-
-        // new implementation:
-        // add a string buffer to textBox struct?
-        // (same width as textbox, + null terminator)
-
         int i, j;
         unsigned char *point;
-        
 
         for( j = 0; j < self->height; j++ )
         {
@@ -197,19 +162,12 @@ void drawWindow(textbox_t* self)
             {
                 for( i = 0; i < self->width; i++ )
                 {
-                    // first character from 2nd line (actually first character from first line?)
-                                                    // because buffer has already been updated.
-                                                    // now we're drawing it.
-                    *point = *(self->charBuffer);
-                    // *point = 'H';
+                    *point = *(self->charBuffer + self->height * i + j);
                    point++;
                 }
 
                 *point = '\0';
-
                 put_str( self->scrollBuffer, 0x0000, self->x, self->y + j );
-
-                // put_str( "MMMMMM", 0x0000, self->x, self->y + j );
             }
             else
             {
@@ -230,12 +188,8 @@ void drawWindow(textbox_t* self)
 		}
 
 		self->drawFlag = 0;
-
 	}
-
 }
-
-
 
 
 
