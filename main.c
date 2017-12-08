@@ -187,10 +187,12 @@ void drawWindow(textbox_t* self)
 
         int i, j;
         unsigned char *point;
-        point = (self->scrollBuffer);
+        
 
         for( j = 0; j < self->height; j++ )
         {
+            point = (self->scrollBuffer);
+
             if( j != self->height - 1 )
             {
                 for( i = 0; i < self->width; i++ )
