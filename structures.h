@@ -10,4 +10,5 @@ typedef struct {
 	unsigned char cursorY;
 	struct textbox_t* self;
 	unsigned char *charBuffer;
+	unsigned char *scrollBuffer;
 } textbox_t;

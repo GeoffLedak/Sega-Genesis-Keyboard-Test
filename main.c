@@ -169,19 +169,50 @@ void drawWindow(textbox_t* self)
         {
 
         // DONT ACTUALLY USE THIS SHIT
+        // Use string drawing method instead for each line
+
+        // int i, j;
+
+        // for( i = 0; i < self->width; i++ )
+        // {
+        //     for( j = 0; j < self->height; j++ )
+        //     {
+        //         put_chr(*(self->charBuffer + self->height * i + j), 0x0000, self->x + i, self->y + j);
+        //     }
+        // }
+
+        // new implementation:
+        // add a string buffer to textBox struct?
+        // (same width as textbox, + null terminator)
 
         int i, j;
+        unsigned char *point;
+        point = self->scrollBuffer;
 
-        for( i = 0; i < self->width; i++ )
+        for( j = 0; j < self->height; j++ )
         {
-            for( j = 0; j < self->height; j++ )
+            if( j != self->height - 1 )
             {
-                put_chr(*(self->charBuffer + self->height * i + j), 0x0000, self->x + i, self->y + j);
+                for( i = 0; i < self->width; i++ )
+                {
+                   *point = *(self->charBuffer + i);
+                   point++;
+                }
+
+                *point = '\0';
+
+                // put_str( self->scrollBuffer, 0x0000, self->x, self->y + j );
+
+                put_str( "MMMMMM", 0x0000, self->x, self->y + j );
             }
+            else
+            {
+                put_str( "KKKKK", 0x0000, self->x, self->y + j );
+            }
+
         }
 
         self->scrollFlag = 0;
-
 
         }
 		else if(!self->newlineFlag)
@@ -216,6 +247,7 @@ int main(void)
 	console.cursorY = console.y;
 	console.self = &console;
 	console.charBuffer = malloc( sizeof(unsigned char) * console.width * console.height );
+    console.scrollBuffer = malloc( sizeof(unsigned char) * console.width + 1 );
 
 
     // 0x0000 = grey
