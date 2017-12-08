@@ -197,8 +197,11 @@ void drawWindow(textbox_t* self)
             {
                 for( i = 0; i < self->width; i++ )
                 {
-                   // *point = *(self->charBuffer + i);
-                    *point = 'H';
+                    // first character from 2nd line (actually first character from first line?)
+                                                    // because buffer has already been updated.
+                                                    // now we're drawing it.
+                    *point = *(self->charBuffer);
+                    // *point = 'H';
                    point++;
                 }
 
