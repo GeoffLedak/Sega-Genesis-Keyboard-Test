@@ -216,6 +216,7 @@ int main(void)
 
 	WaitForVBlank();
     drawBoxes();
+	drawCursor(console.self);
 
     while ( 1 ) // endless loop
     {	
