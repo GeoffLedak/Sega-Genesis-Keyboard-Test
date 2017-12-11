@@ -171,7 +171,7 @@ void drawWindow(textbox_t* self)
             }
             else
             {
-                put_str( "KKKKK", 0x0000, self->x, self->y + j );
+                put_str( "                                  ", 0x0000, self->x, self->y + j );
             }
 
         }
