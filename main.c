@@ -48,27 +48,20 @@ unsigned char scancodeTableSize = sizeof(scancodeToAscii) / sizeof(unsigned char
 ControlGlobals ControlGlobalz;
 
 textbox_t console;
-// console.charBuffer = malloc( sizeof(unsigned char) );
-
 
 
 void scrollUp(textbox_t* self)
 {
-    // *(self->charBuffer + self->height * (self->cursorX - self->x) + (self->cursorY - self->y)) = theChar;
-
     int i, j;
 
         for( i = 0; i < self->width; i++ )
         {
             for( j = 0; j < self->height; j++ )
             {
-                // put_chr(*(self->charBuffer + self->height * i + j), 0x0000, self->x + i, self->y + j);
                 *(self->charBuffer + self->height * i + j) = *(self->charBuffer + self->height * i + (j + 1) );
             }
         }
 }
-
-
 
 
 void advanceWindowCursor(textbox_t* self)
@@ -83,10 +76,10 @@ void advanceWindowCursor(textbox_t* self)
 
 		if( self->cursorY >= (self->y + self->height) )
 		{
-			// self->cursorY = self->y;
             self->cursorY--;
             scrollUp(self);
             self->scrollFlag = 1;
+            self->newlineFlag = 0;
 		}
 	}
 
@@ -94,60 +87,24 @@ void advanceWindowCursor(textbox_t* self)
 }
 
 
-
-
 void drawCharToWindow(textbox_t* self, char theChar)
 {
-	// put_chr(theChar, 0x0000, self->cursorX, self->cursorY);
-
-
-	// **(*self.charBuffer + *self.height * i + j)
-
-
-
-	// *(self->charBuffer + self->height * self->cursorX + self->cursorY) = theChar;
-
-
 	self->drawFlag = 1;
-
 	*(self->charBuffer + self->height * (self->cursorX - self->x) + (self->cursorY - self->y)) = theChar;
-
-
-
-
-
-
 	advanceWindowCursor(self);
 }
 
 
-
 void drawCursor(textbox_t* self)
 {
-
-/*
-	if( globalCounter > 0 && globalCounter < 30 )
-		put_chr(219, 0x0000, 2, 2);
-	else
-		put_chr(' ', 0x0000, 2, 2);
-*/
-
-
 	put_chr(219, 0x0000, self->cursorX, self->cursorY);
-
-
-
-
-
 }
-
 
 
 void drawWindow(textbox_t* self)
 {
 	if(self->drawFlag)
 	{
-
         if( self->scrollFlag )
         {
 
@@ -163,7 +120,7 @@ void drawWindow(textbox_t* self)
                 for( i = 0; i < self->width; i++ )
                 {
                     *point = *(self->charBuffer + self->height * i + j);
-                   point++;
+                    point++;
                 }
 
                 *point = '\0';
@@ -171,7 +128,8 @@ void drawWindow(textbox_t* self)
             }
             else
             {
-                put_str( "                                  ", 0x0000, self->x, self->y + j );
+                // put_str( "                                  ", 0x0000, self->x, self->y + j );
+
             }
 
         }
@@ -190,8 +148,6 @@ void drawWindow(textbox_t* self)
 		self->drawFlag = 0;
 	}
 }
-
-
 
 
 int main(void)
@@ -229,10 +185,8 @@ int main(void)
     }
 	
 	
-	
     return 0;
 }
-
 
 
 void drawBoxes()
@@ -262,7 +216,6 @@ void drawBoxes()
 	put_str("\xB3                                  \xB3", 0x0000, 2, 24);
 	put_str("\xC0\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xD9", 0x0000, 2, 25);
 }
-
 
 
 void ReadCharacters()
@@ -359,13 +312,9 @@ void ReadCharacters()
             //    TextEditAppend(state->teRefs[state->keyLayout->activeField], 1, &keyPress);
 
 
-
-
             // putChar(keyPress);
 
 			drawCharToWindow(console.self, keyPress);
-
-
 
         }
         else
@@ -420,10 +369,7 @@ void ReadCharacters()
         }
     }
 
-    
-
 }
-
 
 
 void readControllers() {
@@ -483,7 +429,6 @@ void readControllers() {
         startButtonPressed = 0;
     }
 }
-
 
 
 void readKeyboard() {
