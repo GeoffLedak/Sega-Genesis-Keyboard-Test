@@ -47,7 +47,10 @@ unsigned char scancodeTableSize = sizeof(scancodeToAscii) / sizeof(unsigned char
 
 ControlGlobals ControlGlobalz;
 
+char packetDumpArray[40];
+
 textbox_t console;
+textbox_t packetDump;
 
 
 void scrollUp(textbox_t* self)
@@ -92,6 +95,21 @@ void drawCharToWindow(textbox_t* self, char theChar)
 	self->drawFlag = 1;
 	*(self->charBuffer + self->height * (self->cursorX - self->x) + (self->cursorY - self->y)) = theChar;
 	advanceWindowCursor(self);
+}
+
+
+void drawHexStringToWindow(textbox_t* self, char *theString)
+{
+    // this and the function above should be renamed.
+    // we're not actually drawing here, we're adding to the textbox's char buffer.
+
+    // call this function at the bottom of ReadESKeyboard
+
+    // check cursor y position
+    // use regular assembly string write subroutine
+    // theString points of our string yo
+    // if da cursor is at the bottom fo da window, scroll up and shit
+    // this should be easy, dont fuck up
 }
 
 
@@ -164,6 +182,19 @@ int main(void)
 	console.charBuffer = malloc( sizeof(unsigned char) * console.width * console.height );
     console.scrollBuffer = malloc( sizeof(unsigned char) * console.width + 1 );
 
+    packetDump.newlineFlag = 0;
+    packetDump.drawFlag = 0;
+    packetDump.scrollFlag = 0;
+    packetDump.x = 3;
+    packetDump.y = 18;
+    packetDump.width = 34;
+    packetDump.height = 6;
+    packetDump.cursorX = packetDump.x;
+    packetDump.cursorY = packetDump.y;
+    packetDump.self = &packetDump;
+    packetDump.charBuffer = malloc( sizeof(unsigned char) * packetDump.width * packetDump.height );
+    packetDump.scrollBuffer = malloc( sizeof(unsigned char) * packetDump.width + 1 );
+
 
     // 0x0000 = grey
     // 0x2000 = green
@@ -177,6 +208,7 @@ int main(void)
     {	
 		ReadCharacters();
 		drawWindow(console.self);
+        drawWindow(packetDump.self);
 		
 
 
@@ -531,6 +563,8 @@ int FindESKeyboard(void) {
 
 void ReadESKeyboard ( void )
 {
+    unsigned char packetDumpIndex = 0;
+
                         UChar       readBuf[4];
     register            UChar*      readScan = readBuf;
     volatile register   UChar*      reg = (UChar*) kData2;      // only support keyboard on PORT 2!
@@ -581,6 +615,9 @@ void ReadESKeyboard ( void )
             temp <<= 4;
             temp |= GetHandshakeNibblePort2(&hshkState, "DT", 5, 11);
 
+            packetDumpArray[packetDumpIndex] = temp;
+            packetDumpIndex++;
+
             len--;                                                  // len includes data type byte
 
             if ( temp == kESKeycodeData )
@@ -596,6 +633,10 @@ void ReadESKeyboard ( void )
                     temp = GetHandshakeNibblePort2(&hshkState, "XX", 5, 13);
                     temp <<= 4;
                     temp |= GetHandshakeNibblePort2(&hshkState, "XX", 5, 13);
+
+                    packetDumpArray[packetDumpIndex] = temp;
+                    packetDumpIndex++;
+
                     // readScan[REFGLOBAL( controls, keycodeHead )] = temp;
                     readScan[ControlGlobalz.keycodeHead] = temp;
                     len--;
@@ -614,6 +655,10 @@ void ReadESKeyboard ( void )
                     temp = GetHandshakeNibblePort2(&hshkState, "XX", 5, 13);
                     temp <<= 4;
                     temp |= GetHandshakeNibblePort2(&hshkState, "XX", 5, 13);
+
+                    packetDumpArray[packetDumpIndex] = temp;
+                    packetDumpIndex++;
+
                     // readScan[REFGLOBAL( controls, statusHead )] = temp;
                     readScan[ControlGlobalz.statusHead] = temp;
                     len--;
@@ -621,6 +666,8 @@ void ReadESKeyboard ( void )
             }
         }
         *reg = kTH + kTR;                               // make sure we leave with TH & TR hi
+
+        packetDumpArray[packetDumpIndex] = '\0';
     }
 
 }
