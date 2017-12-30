@@ -145,6 +145,12 @@ void drawHexStringToWindow(textbox_t* self, char *theString)
     // to make this do what I want, each byte needs to be represented by 2 characters.
     // you can use bit shifting to look at the value of each nibble and stuff
     // should be pretty easy. don't fuck it up.
+
+    /*
+    0x3B <-- example value
+    "Splitting into nibbles" usually means 0x3B >4 (to get the upper
+     nibble) and 0x3B & 0xF (to get the lower nibble).
+    */
 }
 
 
