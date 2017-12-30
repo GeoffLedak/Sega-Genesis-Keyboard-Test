@@ -110,6 +110,41 @@ void drawHexStringToWindow(textbox_t* self, char *theString)
     // theString points of our string yo
     // if da cursor is at the bottom fo da window, scroll up and shit
     // this should be easy, dont fuck up
+
+
+    // unsigned char *index = theString;
+    int i = 0;
+
+
+    // while( i < 5 )
+    // {
+    //     if( theString[i] >= 0x00 && theString[i] <= 0x09 )
+    //         theString[i] = theString[i] + 0x30;
+    //     else if( theString[i] >= 0x0A && theString[i] <= 0x0F )
+    //     {
+    //         theString[i] = theString[i] + 0x37;
+    //     }
+    //     else
+    //         theString[i] = '-';
+
+
+    //     put_chr('a', 0x0000, i, 0);
+
+    //     i++;
+    // }
+
+
+
+    // self->drawFlag = 1;
+    // *(self->charBuffer + self->height * (self->x) + (self->y)) = *theString;
+    put_str(theString, 0x2000, self->x, self->y);
+
+
+    // This shit is doing exactly what I'm telling it to do. It's taking the scancode and
+    // printing it as an ascii character. lowercase p equals capital M
+    // to make this do what I want, each byte needs to be represented by 2 characters.
+    // you can use bit shifting to look at the value of each nibble and stuff
+    // should be pretty easy. don't fuck it up.
 }
 
 
@@ -664,14 +699,16 @@ void ReadESKeyboard ( void )
                     len--;
                 }
             }
-        }
-        *reg = kTH + kTR;                               // make sure we leave with TH & TR hi
 
         packetDumpArray[packetDumpIndex] = '\0';
+
+        drawHexStringToWindow(packetDump.self, packetDumpArray);
+
+        }
+
+        *reg = kTH + kTR;                               // make sure we leave with TH & TR hi
     }
-
 }
-
 
 
 
