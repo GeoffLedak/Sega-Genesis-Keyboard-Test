@@ -113,7 +113,46 @@ void drawHexStringToWindow(textbox_t* self, char *theString)
 
 
     // unsigned char *index = theString;
-    int i = 0;
+    int i;
+    int j = 0;
+
+    char poop[40];
+
+
+    for( i = 0; i < 40; i++ )
+    {
+
+
+        if( (theString[i] >> 4) >= 0x00 && (theString[i] >> 4) <= 0x09 )
+            poop[j] = (theString[i] >> 4) + 0x30;
+        else if( (theString[i] >> 4) >= 0x0A && (theString[i] >> 4) <= 0x0F )
+        {
+            poop[j] = (theString[i] >> 4) + 0x37;
+        }
+        else
+            poop[j] = '-';
+
+
+
+        j++;
+
+
+
+        if( (theString[i] & 0xF) >= 0x00 && (theString[i] & 0xF) <= 0x09 )
+            poop[j] = (theString[i] & 0xF) + 0x30;
+        else if( (theString[i] & 0xF) >= 0x0A && (theString[i] & 0xF) <= 0x0F )
+        {
+            poop[j] = (theString[i] & 0xF) + 0x37;
+        }
+        else
+            poop[j] = '-';
+
+
+        j++;
+        poop[j] = ' ';
+
+        j++;
+    }
 
 
     // while( i < 5 )
@@ -137,7 +176,7 @@ void drawHexStringToWindow(textbox_t* self, char *theString)
 
     // self->drawFlag = 1;
     // *(self->charBuffer + self->height * (self->x) + (self->y)) = *theString;
-    put_str(theString, 0x2000, self->x, self->y);
+    put_str(poop, 0x2000, self->x, self->y);
 
 
     // This shit is doing exactly what I'm telling it to do. It's taking the scancode and
