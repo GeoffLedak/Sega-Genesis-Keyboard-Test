@@ -111,17 +111,13 @@ void drawHexStringToWindow(textbox_t* self, short *theString)
     // if da cursor is at the bottom fo da window, scroll up and shit
     // this should be easy, dont fuck up
 
-
-    // unsigned char *index = theString;
     int i = 0;
     int j = 0;
 
     char poop[40];
 
-
     while( theString[i] != 0xFF )
     {
-
 
         if( (theString[i] >> 4) >= 0x00 && (theString[i] >> 4) <= 0x09 )
             poop[j] = (theString[i] >> 4) + 0x30;
@@ -133,9 +129,7 @@ void drawHexStringToWindow(textbox_t* self, short *theString)
             poop[j] = '-';
 
 
-
         j++;
-
 
 
         if( (theString[i] & 0xF) >= 0x00 && (theString[i] & 0xF) <= 0x09 )
@@ -159,41 +153,10 @@ void drawHexStringToWindow(textbox_t* self, short *theString)
     poop[j] = '\0';
 
 
-    // while( i < 5 )
-    // {
-    //     if( theString[i] >= 0x00 && theString[i] <= 0x09 )
-    //         theString[i] = theString[i] + 0x30;
-    //     else if( theString[i] >= 0x0A && theString[i] <= 0x0F )
-    //     {
-    //         theString[i] = theString[i] + 0x37;
-    //     }
-    //     else
-    //         theString[i] = '-';
-
-
-    //     put_chr('a', 0x0000, i, 0);
-
-    //     i++;
-    // }
-
-
-
     // self->drawFlag = 1;
     // *(self->charBuffer + self->height * (self->x) + (self->y)) = *theString;
     put_str(poop, 0x2000, self->x, self->y);
 
-
-    // This shit is doing exactly what I'm telling it to do. It's taking the scancode and
-    // printing it as an ascii character. lowercase p equals capital M
-    // to make this do what I want, each byte needs to be represented by 2 characters.
-    // you can use bit shifting to look at the value of each nibble and stuff
-    // should be pretty easy. don't fuck it up.
-
-    /*
-    0x3B <-- example value
-    "Splitting into nibbles" usually means 0x3B >4 (to get the upper
-     nibble) and 0x3B & 0xF (to get the lower nibble).
-    */
 }
 
 
