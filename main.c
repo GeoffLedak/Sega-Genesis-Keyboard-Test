@@ -649,18 +649,18 @@ void ReadESKeyboard ( void )
     readScan++;
 
     hshkState = 0;                                          // start flipping TR
-    *readScan++ = GetHandshakeNibblePort2(&hshkState, "r3", 5, 3);      // 3rd nybble = local ID
-    *readScan++ = GetHandshakeNibblePort2(&hshkState, "r4", 5, 5);      // 4th nybble = local ID
+    *readScan++ = GetHandshakeNibblePort2(&hshkState, "r3", 5, 4);      // 3rd nybble = local ID
+    *readScan++ = GetHandshakeNibblePort2(&hshkState, "r4", 5, 7);      // 4th nybble = local ID
 
     if ( *(ULong *) readBuf == kbID )                       // found a good Eric Smith Keyboard
     {
-        len = GetHandshakeNibblePort2(&hshkState, "BC", 5, 7);          // 5th nybble = BYTE count, 0-15
+        len = GetHandshakeNibblePort2(&hshkState, " C", 5, 9);          // 5th nybble = BYTE count, 0-15
 
         if (len)
         {
-            temp = GetHandshakeNibblePort2(&hshkState, "DT", 5, 9);             // get data type
+            temp = GetHandshakeNibblePort2(&hshkState, " T", 5, 11);             // get data type
             temp <<= 4;
-            temp |= GetHandshakeNibblePort2(&hshkState, "DT", 5, 11);
+            temp |= GetHandshakeNibblePort2(&hshkState, " T", 5, 13);
 
             packetDumpArray[packetDumpIndex] = temp;
             packetDumpIndex++;
@@ -677,9 +677,9 @@ void ReadESKeyboard ( void )
                     ControlGlobalz.keycodeHead ++;
                     // REFGLOBAL( controls, keycodeHead ) &= kKeybdDataFifoMask;    // circular buf
                     ControlGlobalz.keycodeHead &= kKeybdDataFifoMask;
-                    temp = GetHandshakeNibblePort2(&hshkState, "XX", 5, 13);
+                    temp = GetHandshakeNibblePort2(&hshkState, " 1", 5, 15);
                     temp <<= 4;
-                    temp |= GetHandshakeNibblePort2(&hshkState, "XX", 5, 13);
+                    temp |= GetHandshakeNibblePort2(&hshkState, " 2", 5, 17);
 
                     packetDumpArray[packetDumpIndex] = temp;
                     packetDumpIndex++;
