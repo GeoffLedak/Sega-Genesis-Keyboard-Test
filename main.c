@@ -47,7 +47,7 @@ unsigned char scancodeTableSize = sizeof(scancodeToAscii) / sizeof(unsigned char
 
 ControlGlobals ControlGlobalz;
 
-char packetDumpArray[40];
+short packetDumpArray[40];
 
 textbox_t console;
 textbox_t packetDump;
@@ -98,7 +98,7 @@ void drawCharToWindow(textbox_t* self, char theChar)
 }
 
 
-void drawHexStringToWindow(textbox_t* self, char *theString)
+void drawHexStringToWindow(textbox_t* self, short *theString)
 {
     // this and the function above should be renamed.
     // we're not actually drawing here, we're adding to the textbox's char buffer.
@@ -113,13 +113,13 @@ void drawHexStringToWindow(textbox_t* self, char *theString)
 
 
     // unsigned char *index = theString;
-    int i;
+    int i = 0;
     int j = 0;
 
     char poop[40];
 
 
-    for( i = 0; i < 40; i++ )
+    while( theString[i] != 0xFF )
     {
 
 
@@ -151,6 +151,8 @@ void drawHexStringToWindow(textbox_t* self, char *theString)
         j++;
         poop[j] = ' ';
 
+
+        i++;
         j++;
     }
 
@@ -745,7 +747,7 @@ void ReadESKeyboard ( void )
                 }
             }
 
-        packetDumpArray[packetDumpIndex] = '\0';
+        packetDumpArray[packetDumpIndex] = 0xFF;
 
         drawHexStringToWindow(packetDump.self, packetDumpArray);
 
