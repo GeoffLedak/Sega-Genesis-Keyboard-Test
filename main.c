@@ -156,6 +156,8 @@ void drawHexStringToWindow(textbox_t* self, short *theString)
         j++;
     }
 
+    poop[j] = '\0';
+
 
     // while( i < 5 )
     // {
