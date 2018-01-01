@@ -100,17 +100,6 @@ void drawCharToWindow(textbox_t* self, char theChar)
 
 void drawHexStringToWindow(textbox_t* self, short *theString)
 {
-    // this and the function above should be renamed.
-    // we're not actually drawing here, we're adding to the textbox's char buffer.
-
-    // call this function at the bottom of ReadESKeyboard
-
-    // check cursor y position
-    // use regular assembly string write subroutine
-    // theString points of our string yo
-    // if da cursor is at the bottom fo da window, scroll up and shit
-    // this should be easy, dont fuck up
-
     int i = 0;
     int j = 0;
 
@@ -153,10 +142,21 @@ void drawHexStringToWindow(textbox_t* self, short *theString)
     poop[j] = '\0';
 
 
-    // self->drawFlag = 1;
-    // *(self->charBuffer + self->height * (self->x) + (self->y)) = *theString;
-    put_str(poop, 0x2000, self->x, self->y);
 
+    self->newlineFlag = 1;
+
+
+    char *poopIndex = poop;
+
+
+    while( *poopIndex != '\0' )
+    {
+        self->drawFlag = 1;
+        *(self->charBuffer + self->height * (self->cursorX - self->x) + (self->cursorY - self->y)) = *poopIndex;
+        advanceWindowCursor(self);
+
+        poopIndex++;
+    }
 }
 
 
@@ -220,7 +220,7 @@ int main(void)
 	console.drawFlag = 0;
     console.scrollFlag = 0;
 	console.x = 3;
-	console.y = 11;
+	console.y = 19;
 	console.width = 34;
 	console.height = 6;
 	console.cursorX = console.x;
@@ -233,7 +233,7 @@ int main(void)
     packetDump.drawFlag = 0;
     packetDump.scrollFlag = 0;
     packetDump.x = 3;
-    packetDump.y = 18;
+    packetDump.y = 11;
     packetDump.width = 34;
     packetDump.height = 6;
     packetDump.cursorX = packetDump.x;
