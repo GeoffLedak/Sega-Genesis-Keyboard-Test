@@ -149,6 +149,10 @@ void drawHexStringToWindow(textbox_t* self, short *theString)
     char *poopIndex = poop;
 
 
+    if( self->cursorY >= (self->y + self->height - 1) )
+    {
+        scrollUp(self);
+    }
 
 
 
@@ -256,7 +260,7 @@ void drawPacketDumpWindow(textbox_t* self)
         {
             point = (self->scrollBuffer);
 
-            if( j != self->height - 1 )
+            if( j != self->height )
             {
                 for( i = 0; i < self->width; i++ )
                 {
@@ -267,10 +271,10 @@ void drawPacketDumpWindow(textbox_t* self)
                 *point = '\0';
                 put_str( self->scrollBuffer, 0x0000, self->x, self->y + j );
             }
-            else
-            {
-                put_str( "hh                               ", 0x0000, self->x + 1, self->y + j );
-            }
+            // else
+            // {
+            //     put_str( "hh                               ", 0x0000, self->x + 1, self->y + j );
+            // }
 
         }
 
