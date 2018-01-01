@@ -143,20 +143,49 @@ void drawHexStringToWindow(textbox_t* self, short *theString)
 
 
 
-    self->newlineFlag = 1;
+    self->drawFlag = 1;
 
 
     char *poopIndex = poop;
 
 
+
+
+
     while( *poopIndex != '\0' )
-    {
-        self->drawFlag = 1;
+    {   
         *(self->charBuffer + self->height * (self->cursorX - self->x) + (self->cursorY - self->y)) = *poopIndex;
-        advanceWindowCursor(self);
+
+        self->cursorX++;
+
+        if( self->cursorX >= (self->x + self->width) )
+        {
+            self->cursorX = self->x;
+            self->cursorY++;
+
+            if( self->cursorY >= (self->y + self->height) )
+            {
+                self->cursorY--;
+                scrollUp(self);
+            }
+        }
+
 
         poopIndex++;
     }
+
+
+
+    // scrollUp(self);
+    self->cursorX = self->x;
+    self->cursorY++;
+
+    if( self->cursorY >= (self->y + self->height) )
+    {
+        self->cursorY--;
+    }
+
+
 }
 
 
@@ -214,6 +243,46 @@ void drawWindow(textbox_t* self)
 }
 
 
+void drawPacketDumpWindow(textbox_t* self)
+{
+    if(self->drawFlag)
+    {
+
+
+        int i, j;
+        unsigned char *point;
+
+        for( j = 0; j < self->height; j++ )
+        {
+            point = (self->scrollBuffer);
+
+            if( j != self->height - 1 )
+            {
+                for( i = 0; i < self->width; i++ )
+                {
+                    *point = *(self->charBuffer + self->height * i + j);
+                    point++;
+                }
+
+                *point = '\0';
+                put_str( self->scrollBuffer, 0x0000, self->x, self->y + j );
+            }
+            else
+            {
+                put_str( "hh                               ", 0x0000, self->x + 1, self->y + j );
+            }
+
+        }
+
+        self->drawFlag = 0;
+
+
+    }
+
+
+}
+
+
 int main(void)
 {
 	console.newlineFlag = 0;
@@ -255,7 +324,7 @@ int main(void)
     {	
 		ReadCharacters();
 		drawWindow(console.self);
-        drawWindow(packetDump.self);
+        drawPacketDumpWindow(packetDump.self);
 		
 
 
