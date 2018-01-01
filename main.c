@@ -260,17 +260,15 @@ void drawPacketDumpWindow(textbox_t* self)
         {
             point = (self->scrollBuffer);
 
-            if( j != self->height )
+            for( i = 0; i < self->width; i++ )
             {
-                for( i = 0; i < self->width; i++ )
-                {
-                    *point = *(self->charBuffer + self->height * i + j);
-                    point++;
-                }
-
-                *point = '\0';
-                put_str( self->scrollBuffer, 0x0000, self->x, self->y + j );
+                *point = *(self->charBuffer + self->height * i + j);
+                point++;
             }
+
+            *point = '\0';
+            put_str( self->scrollBuffer, 0x0000, self->x, self->y + j );
+            
             // else
             // {
             //     put_str( "hh                               ", 0x0000, self->x + 1, self->y + j );
