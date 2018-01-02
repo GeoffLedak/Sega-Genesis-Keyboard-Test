@@ -103,50 +103,50 @@ void drawHexStringToWindow(textbox_t* self, short *theString)
     int i = 0;
     int j = 0;
 
-    char poop[40];
+    char tempArray[40];
 
     while( theString[i] != 0xFF )
     {
 
         if( (theString[i] >> 4) >= 0x00 && (theString[i] >> 4) <= 0x09 )
-            poop[j] = (theString[i] >> 4) + 0x30;
+            tempArray[j] = (theString[i] >> 4) + 0x30;
         else if( (theString[i] >> 4) >= 0x0A && (theString[i] >> 4) <= 0x0F )
         {
-            poop[j] = (theString[i] >> 4) + 0x37;
+            tempArray[j] = (theString[i] >> 4) + 0x37;
         }
         else
-            poop[j] = '-';
+            tempArray[j] = '-';
 
 
         j++;
 
 
         if( (theString[i] & 0xF) >= 0x00 && (theString[i] & 0xF) <= 0x09 )
-            poop[j] = (theString[i] & 0xF) + 0x30;
+            tempArray[j] = (theString[i] & 0xF) + 0x30;
         else if( (theString[i] & 0xF) >= 0x0A && (theString[i] & 0xF) <= 0x0F )
         {
-            poop[j] = (theString[i] & 0xF) + 0x37;
+            tempArray[j] = (theString[i] & 0xF) + 0x37;
         }
         else
-            poop[j] = '-';
+            tempArray[j] = '-';
 
 
         j++;
-        poop[j] = ' ';
+        tempArray[j] = ' ';
 
 
         i++;
         j++;
     }
 
-    poop[j] = '\0';
+    tempArray[j] = '\0';
 
 
 
     self->drawFlag = 1;
 
 
-    char *poopIndex = poop;
+    char *tempArrayIndex = tempArray;
 
 
     if( self->cursorY >= (self->y + self->height - 1) )
@@ -156,9 +156,9 @@ void drawHexStringToWindow(textbox_t* self, short *theString)
 
 
 
-    while( *poopIndex != '\0' )
+    while( *tempArrayIndex != '\0' )
     {   
-        *(self->charBuffer + self->height * (self->cursorX - self->x) + (self->cursorY - self->y)) = *poopIndex;
+        *(self->charBuffer + self->height * (self->cursorX - self->x) + (self->cursorY - self->y)) = *tempArrayIndex;
 
         self->cursorX++;
 
@@ -175,7 +175,14 @@ void drawHexStringToWindow(textbox_t* self, short *theString)
         }
 
 
-        poopIndex++;
+        tempArrayIndex++;
+    }
+
+
+    while( self->cursorX < (self->x + self->width) )
+    {
+        *(self->charBuffer + self->height * (self->cursorX - self->x) + (self->cursorY - self->y)) = ' ';
+        self->cursorX++;
     }
 
 
