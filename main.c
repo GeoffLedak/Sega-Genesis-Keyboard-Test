@@ -59,6 +59,9 @@ textbox_t packetDump;
 char keyboardFoundDebug = 0;
 char keyboardFoundDebugPrev = 0;
 
+char keyboardIdString[5] = {' ', ' ', ' ', ' ', '\0'};
+char keyboardIdStringPrev[5] = {' ', ' ', ' ', ' ', '\0'};
+
 char f2Debug = 0;
 char f2DebugPrev = 0;
 char f3Debug = 0;
@@ -335,6 +338,30 @@ void drawDebugFlags()
 
 		keyboardFoundDebugPrev = keyboardFoundDebug;
 	}
+	
+	int i;
+	int stringsEqual = 1;
+	
+	for( i = 0; i < 5; i++ )
+	{
+		if( keyboardIdString[i] != keyboardIdStringPrev[i] )
+		{
+			stringsEqual = 0;
+			break;
+		}
+	}
+	
+	if( !stringsEqual )
+	{
+		put_str(keyboardIdString, 0x0000, 32, 4);
+		
+		for( i = 0; i < 5; i++ )
+		{
+			keyboardIdStringPrev[i] = keyboardIdString[i];
+		}
+	}
+	
+	
 	
 	if( f2Debug != f2DebugPrev )
 	{
@@ -1452,29 +1479,24 @@ void setDebugFlag(char *debugFlag, char pass)
 
 void hexToAscii(unsigned char *sandwiches)
 {
-    // C369;
+    // C369  <---- keyboard id
 
-    unsigned char stuff[5];
-    unsigned char i;
-
+    char i;
+	
     for( i = 0; i < 5; i++ )
     {
         if( i == 4 )
-            stuff[i] = '\0';
+            keyboardIdString[i] = '\0';
         else
-        {
+        {	
             if( sandwiches[i] >= 0x00 && sandwiches[i] <= 0x09 )
-                stuff[i] = sandwiches[i] + 0x30;
+                keyboardIdString[i] = sandwiches[i] + 0x30;
             else if( sandwiches[i] >= 0x0A && sandwiches[i] <= 0x0F )
-            {
-                stuff[i] = sandwiches[i] + 0x37;
-            }
+                keyboardIdString[i] = sandwiches[i] + 0x37;
             else
-                stuff[i] = '-';
+                keyboardIdString[i] = '-';
         }
     }
-
-    put_str(stuff, 0x0000, 32, 4);
 }
 
 
