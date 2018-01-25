@@ -732,13 +732,13 @@ void ReadESKeyboard ( void )
 
     if ( *(ULong *) readBuf == kbID )                       // found a good Eric Smith Keyboard
     {
-        len = GetHandshakeNibblePort2(&hshkState, " C", 5, 9);          // 5th nybble = BYTE count, 0-15
+        len = GetHandshakeNibblePort2(&hshkState, "rC", 5, 10);          // 5th nybble = BYTE count, 0-15
 
         if (len)
         {
-            temp = GetHandshakeNibblePort2(&hshkState, " T", 5, 11);             // get data type
+            temp = GetHandshakeNibblePort2(&hshkState, "T1", 6, 1);             // get data type
             temp <<= 4;
-            temp |= GetHandshakeNibblePort2(&hshkState, " T", 5, 13);
+            temp |= GetHandshakeNibblePort2(&hshkState, "T2", 6, 4);
 
             packetDumpArray[packetDumpIndex] = temp;
             packetDumpIndex++;
@@ -755,9 +755,9 @@ void ReadESKeyboard ( void )
                     ControlGlobalz.keycodeHead ++;
                     // REFGLOBAL( controls, keycodeHead ) &= kKeybdDataFifoMask;    // circular buf
                     ControlGlobalz.keycodeHead &= kKeybdDataFifoMask;
-                    temp = GetHandshakeNibblePort2(&hshkState, " 1", 5, 15);
+                    temp = GetHandshakeNibblePort2(&hshkState, "K1", 6, 7);
                     temp <<= 4;
-                    temp |= GetHandshakeNibblePort2(&hshkState, " 2", 5, 17);
+                    temp |= GetHandshakeNibblePort2(&hshkState, "K2", 6, 10);
 
                     packetDumpArray[packetDumpIndex] = temp;
                     packetDumpIndex++;
@@ -777,9 +777,9 @@ void ReadESKeyboard ( void )
                     ControlGlobalz.statusHead ++;
                     // REFGLOBAL( controls, statusHead ) &= kKeybdCmdStatusFifoMask;   // circular buf
                     ControlGlobalz.statusHead &= kKeybdCmdStatusFifoMask;
-                    temp = GetHandshakeNibblePort2(&hshkState, "XX", 5, 13);
+                    temp = GetHandshakeNibblePort2(&hshkState, "S1", 6, 13);
                     temp <<= 4;
-                    temp |= GetHandshakeNibblePort2(&hshkState, "XX", 5, 13);
+                    temp |= GetHandshakeNibblePort2(&hshkState, "S2", 6, 16);
 
                     packetDumpArray[packetDumpIndex] = temp;
                     packetDumpIndex++;
@@ -844,14 +844,19 @@ register            ULong       kbID = 0xC030609;
 
         if ( !timeout )
         {
+			// FAIL w2
+			setDebugFlag("w2", 7, 1, 0);
             *reg = kTH + kTR;                                   // make sure we leave with TH & TR hi
             return;
         }
+		
+		//PASS w2
+		setDebugFlag("w2", 7, 1, 1);
     
         readScan++;                         
     
         hshkState = 0;                                          // start flipping TR
-        *readScan++ = GetHandshakeNibblePort2(&hshkState, "W3", 6, 1);      // 3rd nybble = local ID
+        *readScan++ = GetHandshakeNibblePort2(&hshkState, "w3", 7, 4);      // 3rd nybble = local ID
 
 
         if ( (*(ULong *) readBuf & 0xFFFFFF00) == (kbID & 0xFFFFFF00) )     // found a good Eric Smith Keyboard?
