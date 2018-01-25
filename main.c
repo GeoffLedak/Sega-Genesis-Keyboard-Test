@@ -17,7 +17,7 @@ void readControllers();
 void readKeyboard();
 
 short GetHandshakeNibblePort2( short* hshkState, char *flagName, char flagLine, char flagNumber );
-void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend );
+void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend, char *flagName, char flagLine, char flagNumber );
 
 int FindESKeyboard( void );
 void ReadESKeyboard ( void );
@@ -871,14 +871,14 @@ register            ULong       kbID = 0xC030609;
             // byteToSend = REFGLOBAL( controls, cmdBuf )[REFGLOBAL( controls, cmdTail )];
             byteToSend = ControlGlobalz.cmdBuf[ControlGlobalz.cmdTail];
 
-            PutHandshakeNibblePort2(&hshkState, 0);             // 4th nybble = 0 ==> I'm talking to him
-            PutHandshakeNibblePort2(&hshkState, 2);             // 2 bytes follow; type & data
+            PutHandshakeNibblePort2(&hshkState, 0, "W0", 7, 7);             // 4th nybble = 0 ==> I'm talking to him
+            PutHandshakeNibblePort2(&hshkState, 2, "W2", 7, 10);             // 2 bytes follow; type & data
             
-            PutHandshakeNibblePort2(&hshkState, ((kESKeycodeData & 0xF0)>>4));      
-            PutHandshakeNibblePort2(&hshkState, (kESKeycodeData & 0x0F));           // 1st byte = type
+            PutHandshakeNibblePort2(&hshkState, ((kESKeycodeData & 0xF0)>>4), "T1", 8, 1);      
+            PutHandshakeNibblePort2(&hshkState, (kESKeycodeData & 0x0F), "T2", 8, 4);           // 1st byte = type
             
-            PutHandshakeNibblePort2(&hshkState, ((byteToSend & 0xF0)>>4));      
-            PutHandshakeNibblePort2(&hshkState, (byteToSend & 0x0F));               // 2nd byte = data
+            PutHandshakeNibblePort2(&hshkState, ((byteToSend & 0xF0)>>4), "D1", 8, 7);      
+            PutHandshakeNibblePort2(&hshkState, (byteToSend & 0x0F), "D2", 8, 10);               // 2nd byte = data
 
             *(char *)kCtl2 &= ~kDataLines;                      // 4 data lines are back to being inputs
             *reg = kTH + kTR;                                   // make sure we leave with TH & TR hi
@@ -1271,13 +1271,16 @@ short GetHandshakeNibblePort2( short* hshkState, char *flagName, char flagLine, 
    The caller must ensure that there is nothing in the upper nybble of byteToSend.
  */
 
-void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend )
+void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend, char *flagName, char flagLine, char flagNumber )
 {
     register            long        timeout = 100;
     volatile register   UChar*      reg = (UChar*) kData2;
 
     if (*hshkState == -1)   // timed out, abort (see below)
+	{
+		setDebugFlag(flagName, flagLine, flagNumber, 0);
         return;
+	}
 
     *reg = (*reg & 0xF0) | byteToSend;  // up to caller to be sure nothing is in hi nybble
 
@@ -1288,7 +1291,10 @@ void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend )
         do {}
         while (!(*reg & kTL) && --timeout);
         if ( timeout )
+		{
+			setDebugFlag(flagName, flagLine, flagNumber, 1);
             return;
+		}
     }
     else
     {
@@ -1297,10 +1303,16 @@ void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend )
         do {}
         while ((*reg & kTL) && --timeout);
         if ( timeout )
+		{
+			setDebugFlag(flagName, flagLine, flagNumber, 1);
             return;
+		}
     }
 
     // if we got this far, we've timed out. return 0xFFs to abort.
+	
+	setDebugFlag(flagName, flagLine, flagNumber, 0);
+	
     *hshkState = -1;
 }
 
