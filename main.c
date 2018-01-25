@@ -506,15 +506,6 @@ void drawDebugFlags()
 		rSB2DebugPrev = rSB2Debug;
 	}
 	
-	if( w2Debug != w2DebugPrev )
-	{
-		if( w2Debug == 1 )
-			put_str( "w2", 0x2000, 19, 7);
-		else
-			put_str( "w2", 0x4000, 19, 7);
-		
-		w2DebugPrev = w2Debug;
-	}	
 	
 	
 	
