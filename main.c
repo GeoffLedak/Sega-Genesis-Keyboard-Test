@@ -16,8 +16,8 @@ void WaitForVBlank();
 void readControllers();
 void readKeyboard();
 
-short GetHandshakeNibblePort2( short* hshkState, char *flagName, char flagLine, char flagNumber );
-void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend );
+short GetHandshakeNibblePort2( short* hshkState, char *debugFlag );
+void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend, char *debugFlag );
 
 int FindESKeyboard( void );
 void ReadESKeyboard ( void );
@@ -33,7 +33,7 @@ void BackUpKeycodeTail();
 
 void _vint_callback();
 
-void setDebugFlag(char *flagName, char flagLine, char flagNumber, char pass);
+void setDebugFlag(char *debugFlag, char pass);
 
 char xPosition = 3;
 char yPosition = 19;
@@ -51,6 +51,50 @@ short packetDumpArray[40];
 
 textbox_t console;
 textbox_t packetDump;
+
+
+
+// Debug Flags
+
+char keyboardFoundDebug = 0;
+char keyboardFoundDebugPrev = 0;
+
+char f2Debug = 0;
+char f2DebugPrev = 0;
+char f3Debug = 0;
+char f3DebugPrev = 0;
+char f4Debug = 0;
+char f4DebugPrev = 0;
+
+char r2Debug = 0;
+char r2DebugPrev = 0;
+char r3Debug = 0;
+char r3DebugPrev = 0;
+char r4Debug = 0;
+char r4DebugPrev = 0;
+char rCDebug = 0;
+char rCDebugPrev = 0;
+char rT1Debug = 0;
+char rT1DebugPrev = 0;
+char rT2Debug = 0;
+char rT2DebugPrev = 0;
+char rKC1Debug = 0;
+char rKC1DebugPrev = 0;
+char rKC2Debug = 0;
+char rKC2DebugPrev = 0;
+char rSB1Debug = 0;
+char rSB1DebugPrev = 0;
+char rSB2Debug = 0;
+char rSB2DebugPrev = 0;
+
+char w2Debug = 0;
+char w2DebugPrev = 0;
+char w3Debug = 0;
+char w3DebugPrev = 0;
+
+char eraseThis = 0;
+
+
 
 
 void scrollUp(textbox_t* self)
@@ -258,8 +302,6 @@ void drawPacketDumpWindow(textbox_t* self)
 {
     if(self->drawFlag)
     {
-
-
         int i, j;
         unsigned char *point;
 
@@ -275,20 +317,44 @@ void drawPacketDumpWindow(textbox_t* self)
 
             *point = '\0';
             put_str( self->scrollBuffer, 0x0000, self->x, self->y + j );
-            
-            // else
-            // {
-            //     put_str( "hh                               ", 0x0000, self->x + 1, self->y + j );
-            // }
-
         }
 
         self->drawFlag = 0;
-
-
     }
+}
 
 
+void drawDebugFlags()
+{
+	if( keyboardFoundDebug != keyboardFoundDebugPrev )
+	{
+		if( keyboardFoundDebug )
+			put_str("Found ES Keyboard!", 0x2000, 19, 3);
+		else
+			put_str("Keyboard not found", 0x4000, 19, 3);
+
+		keyboardFoundDebugPrev = keyboardFoundDebug;
+	}
+	
+	if( f2Debug != f2DebugPrev )
+	{
+		if( f2Debug == 1 )
+			put_str( "f2", 0x2000, 0, 0);
+		else
+			put_str( "f2", 0x4000, 0, 0);
+		
+		f2DebugPrev = f2Debug;
+	}
+	
+	if( f3Debug != f3DebugPrev )
+	{
+		if( f3Debug == 1 )
+			put_str( "f3", 0x2000, 1, 0);
+		else
+			put_str( "f3", 0x4000, 1, 0);
+		
+		f3DebugPrev = f3Debug;
+	}
 }
 
 
@@ -334,6 +400,7 @@ int main(void)
 		ReadCharacters();
 		drawWindow(console.self);
         drawPacketDumpWindow(packetDump.self);
+		drawDebugFlags();
 		
 
 
@@ -591,14 +658,14 @@ void readKeyboard() {
 
     if ( FindESKeyboard() ) {
 
-        put_str("Found ES Keyboard!", 0x2000, 19, 3);
+        keyboardFoundDebug = 1;
 
         ReadESKeyboard();
         WriteESKeyboard();
         EmulateJoypadWithKeyboard();
     }
-	else{
-		put_str("Keyboard not found", 0x4000, 19, 3);
+	else {
+		keyboardFoundDebug = 0;
 	}
 }
 
@@ -646,19 +713,19 @@ int FindESKeyboard(void) {
     if ( !timeout )
     {
         // FAIL f2
-        setDebugFlag("f2", 4, 1, 0);
+        setDebugFlag(&f2Debug, 0);
         *reg = kTH + kTR;                               // make sure we leave with TH & TR hi
         return ( 0 );
     }
 
     // PASS f2
-    setDebugFlag("f2", 4, 1, 1);
+    setDebugFlag(&f2Debug, 1);
 
     readScan++;
 
     hshkState = 0;                                      // start flipping TR
-    *readScan++ = GetHandshakeNibblePort2(&hshkState, "f3", 4, 4);  // 3rd nybble = local ID
-    *readScan = GetHandshakeNibblePort2(&hshkState, "f4", 4, 7);    // 4th nybble = local ID
+    *readScan++ = GetHandshakeNibblePort2(&hshkState, &f3Debug);  // 3rd nybble = local ID
+    *readScan = GetHandshakeNibblePort2(&hshkState, &f4Debug);    // 4th nybble = local ID
 
     *reg |= kTH;                                        // abort the transaction
 
@@ -716,29 +783,29 @@ void ReadESKeyboard ( void )
     if ( !timeout )
     {
 		// FAIL r2
-        setDebugFlag("r2", 5, 1, 0);
+        setDebugFlag(&r2Debug, 0);
         *reg = kTH + kTR;                               // make sure we leave with TH & TR hi
         return;
     }
 
 	// PASS r2
-    setDebugFlag("r2", 5, 1, 1);
+    setDebugFlag(&r2Debug, 1);
 	
     readScan++;
 
     hshkState = 0;                                          // start flipping TR
-    *readScan++ = GetHandshakeNibblePort2(&hshkState, "r3", 5, 4);      // 3rd nybble = local ID
-    *readScan++ = GetHandshakeNibblePort2(&hshkState, "r4", 5, 7);      // 4th nybble = local ID
+    *readScan++ = GetHandshakeNibblePort2(&hshkState, &r3Debug);      // 3rd nybble = local ID
+    *readScan++ = GetHandshakeNibblePort2(&hshkState, &r4Debug);      // 4th nybble = local ID
 
     if ( *(ULong *) readBuf == kbID )                       // found a good Eric Smith Keyboard
     {
-        len = GetHandshakeNibblePort2(&hshkState, " C", 5, 9);          // 5th nybble = BYTE count, 0-15
+        len = GetHandshakeNibblePort2(&hshkState, &rCDebug);          // 5th nybble = BYTE count, 0-15
 
         if (len)
         {
-            temp = GetHandshakeNibblePort2(&hshkState, " T", 5, 11);             // get data type
+            temp = GetHandshakeNibblePort2(&hshkState, &rT1Debug);             // get data type
             temp <<= 4;
-            temp |= GetHandshakeNibblePort2(&hshkState, " T", 5, 13);
+            temp |= GetHandshakeNibblePort2(&hshkState, &rT2Debug);
 
             packetDumpArray[packetDumpIndex] = temp;
             packetDumpIndex++;
@@ -755,9 +822,9 @@ void ReadESKeyboard ( void )
                     ControlGlobalz.keycodeHead ++;
                     // REFGLOBAL( controls, keycodeHead ) &= kKeybdDataFifoMask;    // circular buf
                     ControlGlobalz.keycodeHead &= kKeybdDataFifoMask;
-                    temp = GetHandshakeNibblePort2(&hshkState, " 1", 5, 15);
+                    temp = GetHandshakeNibblePort2(&hshkState, &rKC1Debug);
                     temp <<= 4;
-                    temp |= GetHandshakeNibblePort2(&hshkState, " 2", 5, 17);
+                    temp |= GetHandshakeNibblePort2(&hshkState, &rKC2Debug);
 
                     packetDumpArray[packetDumpIndex] = temp;
                     packetDumpIndex++;
@@ -777,9 +844,9 @@ void ReadESKeyboard ( void )
                     ControlGlobalz.statusHead ++;
                     // REFGLOBAL( controls, statusHead ) &= kKeybdCmdStatusFifoMask;   // circular buf
                     ControlGlobalz.statusHead &= kKeybdCmdStatusFifoMask;
-                    temp = GetHandshakeNibblePort2(&hshkState, "XX", 5, 13);
+                    temp = GetHandshakeNibblePort2(&hshkState, &rSB1Debug);
                     temp <<= 4;
-                    temp |= GetHandshakeNibblePort2(&hshkState, "XX", 5, 13);
+                    temp |= GetHandshakeNibblePort2(&hshkState, &rSB2Debug);
 
                     packetDumpArray[packetDumpIndex] = temp;
                     packetDumpIndex++;
@@ -844,14 +911,19 @@ register            ULong       kbID = 0xC030609;
 
         if ( !timeout )
         {
+			// FAIL w2
+			setDebugFlag(&w2Debug, 1);
             *reg = kTH + kTR;                                   // make sure we leave with TH & TR hi
             return;
         }
+		
+		// PASS w2
+		setDebugFlag(&w2Debug, 0);
     
         readScan++;                         
     
         hshkState = 0;                                          // start flipping TR
-        *readScan++ = GetHandshakeNibblePort2(&hshkState, "W3", 6, 1);      // 3rd nybble = local ID
+        *readScan++ = GetHandshakeNibblePort2(&hshkState, &w3Debug);      // 3rd nybble = local ID
 
 
         if ( (*(ULong *) readBuf & 0xFFFFFF00) == (kbID & 0xFFFFFF00) )     // found a good Eric Smith Keyboard?
@@ -866,14 +938,14 @@ register            ULong       kbID = 0xC030609;
             // byteToSend = REFGLOBAL( controls, cmdBuf )[REFGLOBAL( controls, cmdTail )];
             byteToSend = ControlGlobalz.cmdBuf[ControlGlobalz.cmdTail];
 
-            PutHandshakeNibblePort2(&hshkState, 0);             // 4th nybble = 0 ==> I'm talking to him
-            PutHandshakeNibblePort2(&hshkState, 2);             // 2 bytes follow; type & data
+            PutHandshakeNibblePort2(&hshkState, 0, &eraseThis);             // 4th nybble = 0 ==> I'm talking to him
+            PutHandshakeNibblePort2(&hshkState, 2, &eraseThis);             // 2 bytes follow; type & data
             
-            PutHandshakeNibblePort2(&hshkState, ((kESKeycodeData & 0xF0)>>4));      
-            PutHandshakeNibblePort2(&hshkState, (kESKeycodeData & 0x0F));           // 1st byte = type
+            PutHandshakeNibblePort2(&hshkState, ((kESKeycodeData & 0xF0)>>4), &eraseThis);      
+            PutHandshakeNibblePort2(&hshkState, (kESKeycodeData & 0x0F), &eraseThis);           // 1st byte = type
             
-            PutHandshakeNibblePort2(&hshkState, ((byteToSend & 0xF0)>>4));      
-            PutHandshakeNibblePort2(&hshkState, (byteToSend & 0x0F));               // 2nd byte = data
+            PutHandshakeNibblePort2(&hshkState, ((byteToSend & 0xF0)>>4), &eraseThis);      
+            PutHandshakeNibblePort2(&hshkState, (byteToSend & 0x0F), &eraseThis);               // 2nd byte = data
 
             *(char *)kCtl2 &= ~kDataLines;                      // 4 data lines are back to being inputs
             *reg = kTH + kTR;                                   // make sure we leave with TH & TR hi
@@ -1213,14 +1285,14 @@ unsigned char GetNextESKeyboardRawcode( void )
 
 
 
-short GetHandshakeNibblePort2( short* hshkState, char *flagName, char flagLine, char flagNumber )
+short GetHandshakeNibblePort2( short* hshkState, char *debugFlag )
 {
     register            long        timeout = 100;
     volatile register   UChar*      reg = (UChar*) kData2;
 
     if (*hshkState == -1)   // timed out, abort (see below)
 	{
-		setDebugFlag(flagName, flagLine, flagNumber, 0);
+		setDebugFlag(debugFlag, 0);
         return 0x0F;
 	}
 
@@ -1232,7 +1304,7 @@ short GetHandshakeNibblePort2( short* hshkState, char *flagName, char flagLine, 
         while (!(*reg & kTL) && --timeout);
         if (timeout)
         {
-			setDebugFlag(flagName, flagLine, flagNumber, 1);
+			setDebugFlag(debugFlag, 1);
             nop; nop;
             return *reg & 0x0F;
         }
@@ -1245,7 +1317,7 @@ short GetHandshakeNibblePort2( short* hshkState, char *flagName, char flagLine, 
         while ((*reg & kTL) && --timeout);
         if (timeout)
         {
-			setDebugFlag(flagName, flagLine, flagNumber, 1);
+			setDebugFlag(debugFlag, 1);
             nop; nop;
             return *reg & 0x0F;
         }
@@ -1254,7 +1326,7 @@ short GetHandshakeNibblePort2( short* hshkState, char *flagName, char flagLine, 
     // if we got this far, we've timed out. return 0xFFs to abort.
 
     *hshkState = -1;
-	setDebugFlag(flagName, flagLine, flagNumber, 0);
+	setDebugFlag(debugFlag, 0);
     return 0xFF;
 }
 
@@ -1266,13 +1338,16 @@ short GetHandshakeNibblePort2( short* hshkState, char *flagName, char flagLine, 
    The caller must ensure that there is nothing in the upper nybble of byteToSend.
  */
 
-void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend )
+void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend, char *debugFlag )
 {
     register            long        timeout = 100;
     volatile register   UChar*      reg = (UChar*) kData2;
 
     if (*hshkState == -1)   // timed out, abort (see below)
+	{
+		setDebugFlag(debugFlag, 0);
         return;
+	}
 
     *reg = (*reg & 0xF0) | byteToSend;  // up to caller to be sure nothing is in hi nybble
 
@@ -1283,7 +1358,10 @@ void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend )
         do {}
         while (!(*reg & kTL) && --timeout);
         if ( timeout )
+		{
+			setDebugFlag(debugFlag, 1);
             return;
+		}
     }
     else
     {
@@ -1292,11 +1370,15 @@ void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend )
         do {}
         while ((*reg & kTL) && --timeout);
         if ( timeout )
+		{
+			setDebugFlag(debugFlag, 1);
             return;
+		}
     }
 
     // if we got this far, we've timed out. return 0xFFs to abort.
     *hshkState = -1;
+	setDebugFlag(debugFlag, 0);
 }
 
 
@@ -1358,16 +1440,13 @@ void putNewline()
 }
 
 
-void setDebugFlag(char *flagName, char flagLine, char flagNumber, char pass)
+void setDebugFlag(char *debugFlag, char pass)
 {
-    if( pass )
-    {
-        put_str(flagName, 0x2000, 18 + flagNumber, flagLine);
-    }
-    else
-    {
-        put_str(flagName, 0x4000, 18 + flagNumber, flagLine);
-    }
+	if( &(*debugFlag) == &f2Debug ) f2Debug = pass;
+	if( &(*debugFlag) == &f3Debug ) f3Debug = pass;
+	
+	
+	
 }
 
 
