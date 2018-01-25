@@ -378,9 +378,9 @@ void drawDebugFlags()
 	if( f2Debug != f2DebugPrev )
 	{
 		if( f2Debug == 1 )
-			put_str( "f2", 0x2000, 19, 4);
+			put_str( "f2", 0x2000, 0, 0);
 		else
-			put_str( "f2", 0x4000, 19, 4);
+			put_str( "f2", 0x4000, 0, 0);
 		
 		f2DebugPrev = f2Debug;
 	}
@@ -388,127 +388,12 @@ void drawDebugFlags()
 	if( f3Debug != f3DebugPrev )
 	{
 		if( f3Debug == 1 )
-			put_str( "f3", 0x2000, 22, 4);
+			put_str( "f3", 0x2000, 1, 0);
 		else
-			put_str( "f3", 0x4000, 22, 4);
+			put_str( "f3", 0x4000, 1, 0);
 		
 		f3DebugPrev = f3Debug;
 	}
-	
-	if( f4Debug != f4DebugPrev )
-	{
-		if( f4Debug == 1 )
-			put_str( "f4", 0x2000, 25, 4);
-		else
-			put_str( "f4", 0x4000, 25, 4);
-		
-		f4DebugPrev = f4Debug;
-	}
-	
-	
-	if( r2Debug != r2DebugPrev )
-	{
-		if( r2Debug == 1 )
-			put_str( "r2", 0x2000, 19, 5);
-		else
-			put_str( "r2", 0x4000, 19, 5);
-		
-		r2DebugPrev = r2Debug;
-	}
-	
-	if( r3Debug != r3DebugPrev )
-	{
-		if( r3Debug == 1 )
-			put_str( "r3", 0x2000, 22, 5);
-		else
-			put_str( "r3", 0x4000, 22, 5);
-		
-		r3DebugPrev = r3Debug;
-	}
-	
-	if( r4Debug != r4DebugPrev )
-	{
-		if( r4Debug == 1 )
-			put_str( "r4", 0x2000, 25, 5);
-		else
-			put_str( "r4", 0x4000, 25, 5);
-		
-		r4DebugPrev = r4Debug;
-	}
-	
-	if( rCDebug != rCDebugPrev )
-	{
-		if( r4Debug == 1 )
-			put_str( "rC", 0x2000, 28, 5);
-		else
-			put_str( "rC", 0x4000, 28, 5);
-		
-		rCDebugPrev = rCDebug;
-	}
-	
-	if( rT1Debug != rT1DebugPrev )
-	{
-		if( rT1Debug == 1 )
-			put_str( "T1", 0x2000, 19, 6);
-		else
-			put_str( "T1", 0x4000, 19, 6);
-		
-		rT1DebugPrev = rT1Debug;
-	}
-	
-	if( rT2Debug != rT2DebugPrev )
-	{
-		if( rT2Debug == 1 )
-			put_str( "T2", 0x2000, 22, 6);
-		else
-			put_str( "T2", 0x4000, 22, 6);
-		
-		rT2DebugPrev = rT2Debug;
-	}
-	
-	if( rKC1Debug != rKC1DebugPrev )
-	{
-		if( rKC1Debug == 1 )
-			put_str( "K1", 0x2000, 25, 6);
-		else
-			put_str( "K1", 0x4000, 25, 6);
-		
-		rKC1DebugPrev = rKC1Debug;
-	}
-	
-	if( rKC2Debug != rKC2DebugPrev )
-	{
-		if( rKC2Debug == 1 )
-			put_str( "K2", 0x2000, 28, 6);
-		else
-			put_str( "K2", 0x4000, 28, 6);
-		
-		rKC2DebugPrev = rKC2Debug;
-	}
-	
-	if( rSB1Debug != rSB1DebugPrev )
-	{
-		if( rSB1Debug == 1 )
-			put_str( "S1", 0x2000, 31, 6);
-		else
-			put_str( "S1", 0x4000, 31, 6);
-		
-		rSB1DebugPrev = rSB1Debug;
-	}
-	
-	if( rSB2Debug != rSB2DebugPrev )
-	{
-		if( rSB2Debug == 1 )
-			put_str( "S2", 0x2000, 34, 6);
-		else
-			put_str( "S2", 0x4000, 34, 6);
-		
-		rSB2DebugPrev = rSB2Debug;
-	}
-	
-	
-	
-	
 }
 
 
