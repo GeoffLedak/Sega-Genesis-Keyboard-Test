@@ -94,6 +94,18 @@ char w2Debug = 0;
 char w2DebugPrev = 0;
 char w3Debug = 0;
 char w3DebugPrev = 0;
+char W0Debug = 0;
+char W0DebugPrev = 0;
+char W2Debug = 0;
+char W2DebugPrev = 0;
+char WT1Debug = 0;
+char WT1DebugPrev = 0;
+char WT2Debug = 0;
+char WT2DebugPrev = 0;
+char WD1Debug = 0;
+char WD1DebugPrev = 0;
+char WD2Debug = 0;
+char WD2DebugPrev = 0;
 
 char eraseThis = 0;
 
@@ -965,14 +977,14 @@ register            ULong       kbID = 0xC030609;
             // byteToSend = REFGLOBAL( controls, cmdBuf )[REFGLOBAL( controls, cmdTail )];
             byteToSend = ControlGlobalz.cmdBuf[ControlGlobalz.cmdTail];
 
-            PutHandshakeNibblePort2(&hshkState, 0, &eraseThis);             // 4th nybble = 0 ==> I'm talking to him
-            PutHandshakeNibblePort2(&hshkState, 2, &eraseThis);             // 2 bytes follow; type & data
+            PutHandshakeNibblePort2(&hshkState, 0, &W0Debug);             // 4th nybble = 0 ==> I'm talking to him
+            PutHandshakeNibblePort2(&hshkState, 2, &W2Debug);             // 2 bytes follow; type & data
             
-            PutHandshakeNibblePort2(&hshkState, ((kESKeycodeData & 0xF0)>>4), &eraseThis);      
-            PutHandshakeNibblePort2(&hshkState, (kESKeycodeData & 0x0F), &eraseThis);           // 1st byte = type
+            PutHandshakeNibblePort2(&hshkState, ((kESKeycodeData & 0xF0)>>4), &WT1Debug);      
+            PutHandshakeNibblePort2(&hshkState, (kESKeycodeData & 0x0F), &WT2Debug);           // 1st byte = type
             
-            PutHandshakeNibblePort2(&hshkState, ((byteToSend & 0xF0)>>4), &eraseThis);      
-            PutHandshakeNibblePort2(&hshkState, (byteToSend & 0x0F), &eraseThis);               // 2nd byte = data
+            PutHandshakeNibblePort2(&hshkState, ((byteToSend & 0xF0)>>4), &WD1Debug);      
+            PutHandshakeNibblePort2(&hshkState, (byteToSend & 0x0F), &WD2Debug);               // 2nd byte = data
 
             *(char *)kCtl2 &= ~kDataLines;                      // 4 data lines are back to being inputs
             *reg = kTH + kTR;                                   // make sure we leave with TH & TR hi
@@ -1471,9 +1483,27 @@ void setDebugFlag(char *debugFlag, char pass)
 {
 	if( &(*debugFlag) == &f2Debug ) f2Debug = pass;
 	if( &(*debugFlag) == &f3Debug ) f3Debug = pass;
+	if( &(*debugFlag) == &f4Debug ) f4Debug = pass;
 	
+	if( &(*debugFlag) == &r2Debug ) r2Debug = pass;
+	if( &(*debugFlag) == &r3Debug ) r3Debug = pass;
+	if( &(*debugFlag) == &r4Debug ) r4Debug = pass;
+	if( &(*debugFlag) == &rCDebug ) rCDebug = pass;
+	if( &(*debugFlag) == &rT1Debug ) rT1Debug = pass;
+	if( &(*debugFlag) == &rT2Debug ) rT2Debug = pass;
+	if( &(*debugFlag) == &rKC1Debug ) rKC1Debug = pass;
+	if( &(*debugFlag) == &rKC2Debug ) rKC2Debug = pass;
+	if( &(*debugFlag) == &rSB1Debug ) rSB1Debug = pass;
+	if( &(*debugFlag) == &rSB2Debug ) rSB2Debug = pass;
 	
-	
+	if( &(*debugFlag) == &w2Debug ) w2Debug = pass;
+	if( &(*debugFlag) == &w3Debug ) w3Debug = pass;
+	if( &(*debugFlag) == &W0Debug ) W0Debug = pass;
+	if( &(*debugFlag) == &W2Debug ) W2Debug = pass;
+	if( &(*debugFlag) == &WT1Debug ) WT1Debug = pass;
+	if( &(*debugFlag) == &WT2Debug ) WT2Debug = pass;
+	if( &(*debugFlag) == &WD1Debug ) WD1Debug = pass;
+	if( &(*debugFlag) == &WD2Debug ) WD2Debug = pass;
 }
 
 
