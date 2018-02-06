@@ -348,9 +348,9 @@ int main(void)
 void drawBoxes()
 {
     put_str("\xC9\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xD1\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBB", 0x0000, 2, 2);
-	put_str("\xBA               \xB3                  \xBA", 0x0000, 2, 3);
-	put_str("\xBA               \xB3                  \xBA", 0x0000, 2, 4);
-	put_str("\xBA               \xB3                  \xBA", 0x0000, 2, 5);
+	put_str("\xBA""Num            ""\xB3                  \xBA", 0x0000, 2, 3);
+	put_str("\xBA""Caps           ""\xB3                  \xBA", 0x0000, 2, 4);
+	put_str("\xBA""Scroll         ""\xB3                  \xBA", 0x0000, 2, 5);
 	put_str("\xBA               \xB3                  \xBA", 0x0000, 2, 6);
 	put_str("\xBA               \xB3                  \xBA", 0x0000, 2, 7);
 	put_str("\xBA               \xB3                  \xBA", 0x0000, 2, 8);
@@ -371,6 +371,10 @@ void drawBoxes()
 	put_str("\xB3                                  \xB3", 0x0000, 2, 23);
 	put_str("\xB3                                  \xB3", 0x0000, 2, 24);
 	put_str("\xC0\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xD9", 0x0000, 2, 25);
+
+    put_str("OFF", 0x4000, 13, 3);
+    put_str("OFF", 0x4000, 13, 4);
+    put_str("OFF", 0x4000, 13, 5);
 }
 
 
