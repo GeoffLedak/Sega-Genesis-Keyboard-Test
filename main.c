@@ -542,6 +542,13 @@ void readControllers() {
     {
         if( !aButtonPressed ) {
             putChar('A');
+
+            unsigned char fuck[2];        
+            ControlGlobalz.keyboardFlags ^= kNumLocked;            // flip num lock state
+            fuck[0] = 0xED;                                        // hit the LED reg
+            fuck[1] = ControlGlobalz.keyboardFlags & kNumLocked;   // bits [2:0] are caps/num/scroll lock
+            SendCmdToESKeyboard( fuck, 2 );
+
             aButtonPressed = 1;
         }
     }
@@ -555,6 +562,14 @@ void readControllers() {
     {
         if( !bButtonPressed ) {
             putChar('B');
+
+            unsigned char fuck[2];
+            // ControlGlobalz.keyboardFlags |= kCapsLockDown;          
+            ControlGlobalz.keyboardFlags ^= kCapsLocked;            // flip caps lock state
+            fuck[0] = 0xED;                                         // hit the LED reg
+            fuck[1] = ControlGlobalz.keyboardFlags & kCapsLocked;   // bits [2:0] are caps/num/scroll lock
+            SendCmdToESKeyboard( fuck, 2 );
+
             bButtonPressed = 1;
         }
     }
@@ -568,6 +583,13 @@ void readControllers() {
     {
         if( !cButtonPressed ) {
             putChar('C');
+
+            unsigned char fuck[2];        
+            ControlGlobalz.keyboardFlags ^= kScrollLocked;            // flip scroll lock state
+            fuck[0] = 0xED;                                           // hit the LED reg
+            fuck[1] = ControlGlobalz.keyboardFlags & kScrollLocked;   // bits [2:0] are caps/num/scroll lock
+            SendCmdToESKeyboard( fuck, 2 );
+
             cButtonPressed = 1;
         }
     }
