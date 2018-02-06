@@ -35,6 +35,8 @@ void _vint_callback();
 
 void setDebugFlag(char *flagName, char flagLine, char flagNumber, char pass);
 
+char keyboardConnected = 0;
+
 char xPosition = 3;
 char yPosition = 19;
 
@@ -543,11 +545,14 @@ void readControllers() {
         if( !aButtonPressed ) {
             putChar('A');
 
-            unsigned char fuck[2];        
-            ControlGlobalz.keyboardFlags ^= kNumLocked;            // flip num lock state
-            fuck[0] = 0xED;                                        // hit the LED reg
-            fuck[1] = ControlGlobalz.keyboardFlags & kNumLocked;   // bits [2:0] are caps/num/scroll lock
-            SendCmdToESKeyboard( fuck, 2 );
+            if( keyboardConnected )
+            {
+                unsigned char fuck[2];        
+                ControlGlobalz.keyboardFlags ^= kNumLocked;            // flip num lock state
+                fuck[0] = 0xED;                                        // hit the LED reg
+                fuck[1] = ControlGlobalz.keyboardFlags & kNumLocked;   // bits [2:0] are caps/num/scroll lock
+                SendCmdToESKeyboard( fuck, 2 );
+            }
 
             aButtonPressed = 1;
         }
@@ -563,12 +568,15 @@ void readControllers() {
         if( !bButtonPressed ) {
             putChar('B');
 
-            unsigned char fuck[2];
-            // ControlGlobalz.keyboardFlags |= kCapsLockDown;          
-            ControlGlobalz.keyboardFlags ^= kCapsLocked;            // flip caps lock state
-            fuck[0] = 0xED;                                         // hit the LED reg
-            fuck[1] = ControlGlobalz.keyboardFlags & kCapsLocked;   // bits [2:0] are caps/num/scroll lock
-            SendCmdToESKeyboard( fuck, 2 );
+            if( keyboardConnected )
+            {
+                unsigned char fuck[2];
+                // ControlGlobalz.keyboardFlags |= kCapsLockDown;          
+                ControlGlobalz.keyboardFlags ^= kCapsLocked;            // flip caps lock state
+                fuck[0] = 0xED;                                         // hit the LED reg
+                fuck[1] = ControlGlobalz.keyboardFlags & kCapsLocked;   // bits [2:0] are caps/num/scroll lock
+                SendCmdToESKeyboard( fuck, 2 );
+            }
 
             bButtonPressed = 1;
         }
@@ -584,11 +592,14 @@ void readControllers() {
         if( !cButtonPressed ) {
             putChar('C');
 
-            unsigned char fuck[2];        
-            ControlGlobalz.keyboardFlags ^= kScrollLocked;            // flip scroll lock state
-            fuck[0] = 0xED;                                           // hit the LED reg
-            fuck[1] = ControlGlobalz.keyboardFlags & kScrollLocked;   // bits [2:0] are caps/num/scroll lock
-            SendCmdToESKeyboard( fuck, 2 );
+            if( keyboardConnected )
+            {
+                unsigned char fuck[2];        
+                ControlGlobalz.keyboardFlags ^= kScrollLocked;            // flip scroll lock state
+                fuck[0] = 0xED;                                           // hit the LED reg
+                fuck[1] = ControlGlobalz.keyboardFlags & kScrollLocked;   // bits [2:0] are caps/num/scroll lock
+                SendCmdToESKeyboard( fuck, 2 );
+            }
 
             cButtonPressed = 1;
         }
@@ -617,6 +628,7 @@ void readKeyboard() {
 
     if ( FindESKeyboard() ) {
 
+        keyboardConnected = 1;
         put_str("Found ES Keyboard!", 0x2000, 19, 3);
 
         ReadESKeyboard();
@@ -624,6 +636,7 @@ void readKeyboard() {
         EmulateJoypadWithKeyboard();
     }
 	else{
+        keyboardConnected = 0;
 		put_str("Keyboard not found", 0x4000, 19, 3);
 	}
 }
