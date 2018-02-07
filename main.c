@@ -143,10 +143,7 @@ void drawHexStringToWindow(textbox_t* self, short *theString)
 
     tempArray[j] = '\0';
 
-
-
     self->drawFlag = 1;
-
 
     char *tempArrayIndex = tempArray;
 
@@ -155,7 +152,6 @@ void drawHexStringToWindow(textbox_t* self, short *theString)
     {
         scrollUp(self);
     }
-
 
 
     while( *tempArrayIndex != '\0' )
@@ -187,9 +183,6 @@ void drawHexStringToWindow(textbox_t* self, short *theString)
         self->cursorX++;
     }
 
-
-
-    // scrollUp(self);
     self->cursorX = self->x;
     self->cursorY++;
 
@@ -197,7 +190,6 @@ void drawHexStringToWindow(textbox_t* self, short *theString)
     {
         self->cursorY--;
     }
-
 
 }
 
@@ -260,8 +252,6 @@ void drawPacketDumpWindow(textbox_t* self)
 {
     if(self->drawFlag)
     {
-
-
         int i, j;
         unsigned char *point;
 
@@ -277,20 +267,10 @@ void drawPacketDumpWindow(textbox_t* self)
 
             *point = '\0';
             put_str( self->scrollBuffer, 0x0000, self->x, self->y + j );
-            
-            // else
-            // {
-            //     put_str( "hh                               ", 0x0000, self->x + 1, self->y + j );
-            // }
-
         }
 
         self->drawFlag = 0;
-
-
     }
-
-
 }
 
 
@@ -336,14 +316,10 @@ int main(void)
 		ReadCharacters();
 		drawWindow(console.self);
         drawPacketDumpWindow(packetDump.self);
-		
-
-
-		// WaitForVBlank();
     }
 	
-	
     return 0;
+
 }
 
 
@@ -388,7 +364,6 @@ void ReadCharacters()
     short result = 0;
     unsigned char HWKeypress;
     long hwflags;
-    
 
     HWKeypress = GetNextHardwareKeyboardChar();
 
@@ -426,39 +401,11 @@ void ReadCharacters()
                 }
                 break;
     }
-
-    /*
-    if (command & kLEFT && state->x > kKeyboardLeft)
-    {
-        --state->x;
-        if (state->x == (kKeyboardRight-1)) 
-            SetSegaCursorImage(state->cursor, kSmallKeyboardCursor);
-    }
-    if (command & kRIGHT && state->x < kKeyboardRight)
-    {
-        ++state->x;
-        if (state->x == kKeyboardRight) 
-            SetSegaCursorImage(state->cursor, kLargeKeyboardCursor);
-    }
-    if (command & kUP && state->y > kKeyboardTop)
-        --state->y;
-    if (command & kDOWN && state->y < kKeyboardBottom)
-        ++state->y;
-    
-    if (command & (kLEFT | kRIGHT | kUP | kDOWN))
-        PlayDBFX( kKeyboardMoveSnd, 0, 0 );
-    
-    MoveSegaCursor(state->cursor,
-                state->keyLayout->keyboardX + state->x*kKeyXSize + kKeyboardXOffset,
-                state->keyLayout->keyboardY + state->y*kKeyYSize + kKeyboardYOffset);
-    */
     
     // Did the user click the button?
     if (command & (kButtonA | kButtonB | kButtonC | kStart))
     {
 
-
-        
         if (command & kButtonA)
         {
             // User typed a character. Find out which key was hit
@@ -469,15 +416,7 @@ void ReadCharacters()
         // Was it a letter, or a special?
         if (keyPress >= ' ')
         {
-            // Letter
-            // if ( !state->measureProc || (*state->measureProc)(state->keyLayout->fields[state->keyLayout->activeField].buffer) )
-            //    TextEditAppend(state->teRefs[state->keyLayout->activeField], 1, &keyPress);
-
-
-            // putChar(keyPress);
-
 			drawCharToWindow(console.self, keyPress);
-
         }
         else
         {
@@ -485,17 +424,11 @@ void ReadCharacters()
             switch (keyPress)
             {
                 case keyDelete:
-                        /*
-                        PlayDBFX( kTextDeleteSnd, 0, 0 );
-                        TextEditDelete(state->teRefs[state->keyLayout->activeField], 1);
-                        */
+  
                         break;
                         
                 case keyCancel:
-                        /*
-                        PlayDBFX( kTextInputSnd, 0, 0 );
-                        result = -1;
-                        */
+
                         break;
                 
                 case keyShift:
@@ -503,29 +436,16 @@ void ReadCharacters()
                         break;
                         
                 case keyReturn:
-                        // PlayDBFX( kTextReturnSnd, 0, 0 );
+
                         keyPress = '\n';
-                        // TextEditAppend(state->teRefs[state->keyLayout->activeField], 1, &keyPress);
                         break;
                         
                 case keySwitch:
-                        /*
-                        PlayDBFX( kTextInputSnd, 0, 0 );
-                        TextEditDeactivate(state->teRefs[state->keyLayout->activeField]);
-                        if (state->hasJizzlers)
-                            StopTextBoxAnimation(JIZZLE_FIELD(state, state->keyLayout->activeField));
-                        
-                        SetFocusField(state->keyLayout,
-                            (state->keyLayout->activeField + 1) % state->keyLayout->fieldCount);
-                        TextEditActivate(state->teRefs[state->keyLayout->activeField]);
-                        if (state->hasJizzlers)
-                            StartTextBoxAnimation(JIZZLE_FIELD(state, state->keyLayout->activeField), 5);
-                        */
+
                         break;
                 
                 case keyDone:
-                        // PlayDBFX( kTextInputSnd, 0, 0 );
-                        // result = 1;
+
                         break;
             }
         }
@@ -659,7 +579,6 @@ typedef unsigned long       ULong;
 #define nop          __asm__ __volatile__ ("nop\n\t");
 
 
-
 int FindESKeyboard(void) {
     UChar readBuf[4];
     register UChar*     readScan = readBuf;
@@ -716,7 +635,6 @@ int FindESKeyboard(void) {
         return ( 0 );
     }
 }
-
 
 
 
@@ -786,14 +704,11 @@ void ReadESKeyboard ( void )
 
             if ( temp == kESKeycodeData )
             {                                                       // Key Codes follow
-                // readScan = REFGLOBAL( controls, keycodeBuf );
                 readScan = ControlGlobalz.keycodeBuf;
                 while ( len )
-                {
-                    // REFGLOBAL( controls, keycodeHead )++;                        // bump head
-                    ControlGlobalz.keycodeHead ++;
-                    // REFGLOBAL( controls, keycodeHead ) &= kKeybdDataFifoMask;    // circular buf
-                    ControlGlobalz.keycodeHead &= kKeybdDataFifoMask;
+                {                 
+                    ControlGlobalz.keycodeHead ++;                                  // bump head 
+                    ControlGlobalz.keycodeHead &= kKeybdDataFifoMask;               // circular buf
                     temp = GetHandshakeNibblePort2(&hshkState, "K1", 6, 7);
                     temp <<= 4;
                     temp |= GetHandshakeNibblePort2(&hshkState, "K2", 6, 10);
@@ -801,21 +716,17 @@ void ReadESKeyboard ( void )
                     packetDumpArray[packetDumpIndex] = temp;
                     packetDumpIndex++;
 
-                    // readScan[REFGLOBAL( controls, keycodeHead )] = temp;
                     readScan[ControlGlobalz.keycodeHead] = temp;
                     len--;
                 }
             }
             else
             {                                                       // Status Bytes follow
-                // readScan = REFGLOBAL( controls, statusBuf );
                 readScan = ControlGlobalz.statusBuf;
                 while ( len )
-                {
-                    // REFGLOBAL( controls, statusHead )++;                            // bump head
-                    ControlGlobalz.statusHead ++;
-                    // REFGLOBAL( controls, statusHead ) &= kKeybdCmdStatusFifoMask;   // circular buf
-                    ControlGlobalz.statusHead &= kKeybdCmdStatusFifoMask;
+                {                        
+                    ControlGlobalz.statusHead ++;                                       // bump head 
+                    ControlGlobalz.statusHead &= kKeybdCmdStatusFifoMask;               // circular buf
                     temp = GetHandshakeNibblePort2(&hshkState, "S1", 6, 13);
                     temp <<= 4;
                     temp |= GetHandshakeNibblePort2(&hshkState, "S2", 6, 16);
@@ -823,7 +734,6 @@ void ReadESKeyboard ( void )
                     packetDumpArray[packetDumpIndex] = temp;
                     packetDumpIndex++;
 
-                    // readScan[REFGLOBAL( controls, statusHead )] = temp;
                     readScan[ControlGlobalz.statusHead] = temp;
                     len--;
                 }
@@ -864,7 +774,6 @@ register            long        timeout = 100;
 register            ULong       kbID = 0xC030609;
                     UChar       byteToSend;
     
-    // if ( REFGLOBAL( controls, keyboardPresent ) && (REFGLOBAL( controls, cmdTail ) != REFGLOBAL( controls, cmdHead )) )
     if( ControlGlobalz.cmdTail != ControlGlobalz.cmdHead )
     {   
         *(reg)              = kTH + kTR;                        // both flags hi
@@ -903,21 +812,18 @@ register            ULong       kbID = 0xC030609;
             *reg &= 0xF0;                                       // ensure data lines are 0
             *(char *)kCtl2 |= kDataLines;                       // 4 data lines are outputs now
 
-            // REFGLOBAL( controls, cmdTail )++;
             ControlGlobalz.cmdTail ++;
-            // REFGLOBAL( controls, cmdTail ) &= kKeybdCmdStatusFifoMask;
             ControlGlobalz.cmdTail &= kKeybdCmdStatusFifoMask;
-            // byteToSend = REFGLOBAL( controls, cmdBuf )[REFGLOBAL( controls, cmdTail )];
             byteToSend = ControlGlobalz.cmdBuf[ControlGlobalz.cmdTail];
 
             PutHandshakeNibblePort2(&hshkState, 0, "W0", 7, 7);             // 4th nybble = 0 ==> I'm talking to him
             PutHandshakeNibblePort2(&hshkState, 2, "W2", 7, 10);             // 2 bytes follow; type & data
             
             PutHandshakeNibblePort2(&hshkState, ((kESKeycodeData & 0xF0)>>4), "T1", 8, 1);      
-            PutHandshakeNibblePort2(&hshkState, (kESKeycodeData & 0x0F), "T2", 8, 4);           // 1st byte = type
+            PutHandshakeNibblePort2(&hshkState, (kESKeycodeData & 0x0F), "T2", 8, 4);         // 1st byte = type
             
             PutHandshakeNibblePort2(&hshkState, ((byteToSend & 0xF0)>>4), "D1", 8, 7);      
-            PutHandshakeNibblePort2(&hshkState, (byteToSend & 0x0F), "D2", 8, 10);               // 2nd byte = data
+            PutHandshakeNibblePort2(&hshkState, (byteToSend & 0x0F), "D2", 8, 10);            // 2nd byte = data
 
             *(char *)kCtl2 &= ~kDataLines;                      // 4 data lines are back to being inputs
             *reg = kTH + kTR;                                   // make sure we leave with TH & TR hi
@@ -936,22 +842,9 @@ unsigned short oldSR;
 
     while ( cmdLen )
     {
-
-        // asm {   move.w  sr,oldSR
-        //         move.w  #0x2700,sr
-        //     }
-
-        // __asm__ __volatile__ ("move.w  sr, oldSR\n\t"
-        //                       "move.w  #0x2700, sr\n\t");
-
-        // REFGLOBAL( controls, cmdHead )++;
         ControlGlobalz.cmdHead ++;
-        // REFGLOBAL( controls, cmdHead ) &= kKeybdCmdStatusFifoMask;
         ControlGlobalz.cmdHead &= kKeybdCmdStatusFifoMask;
-        // REFGLOBAL( controls, cmdBuf )[REFGLOBAL( controls, cmdHead )] = *cmdBuf;
         ControlGlobalz.cmdBuf[ControlGlobalz.cmdHead] = *cmdBuf;
-        // asm {   move.w  oldSR,sr    }
-        // __asm__ __volatile__ ("move.w  oldSR, sr\n\t");
 
         cmdBuf++;       
         cmdLen--;
@@ -959,27 +852,17 @@ unsigned short oldSR;
 }
 
 
-
-
-
 unsigned char GetNextHardwareKeyboardChar( void )
 {
-    // if ( REFGLOBAL( controls, keyboardPresent ) && (REFGLOBAL( controls, sysKeysTail ) != REFGLOBAL( controls, sysKeysHead )) )
     if( ControlGlobalz.sysKeysTail != ControlGlobalz.sysKeysHead )
     {
-        // REFGLOBAL( controls, sysKeysTail )++;
         ControlGlobalz.sysKeysTail ++;
-        // REFGLOBAL( controls, sysKeysTail ) &= kSysKeysFifoMask;
         ControlGlobalz.sysKeysTail &= kSysKeysFifoMask;
-        // return( REFGLOBAL( controls, sysKeysBuf )[REFGLOBAL( controls, sysKeysTail )] );
         return ControlGlobalz.sysKeysBuf[ControlGlobalz.sysKeysTail];
     }
     else
         return( kNoKey );
 }
-
-
-
 
 
 void EmulateJoypadWithKeyboard( void )
@@ -988,21 +871,16 @@ void EmulateJoypadWithKeyboard( void )
 
     key = GetNextESKeyboardChar();
 
-    // REFGLOBAL( controls, sysKeysHead )++;       /* not pad-like, stick in key buf */
-    ControlGlobalz.sysKeysHead ++;
-    // REFGLOBAL( controls, sysKeysHead ) &= kSysKeysFifoMask;
+    ControlGlobalz.sysKeysHead ++;                 /* not pad-like, stick in key buf */
     ControlGlobalz.sysKeysHead &= kSysKeysFifoMask;
-    // REFGLOBAL( controls, sysKeysBuf )[REFGLOBAL( controls, sysKeysHead )] = key;
     ControlGlobalz.sysKeysBuf[ControlGlobalz.sysKeysHead] = key;
-
 }
-
 
 
 
 long GetHardwareKeyboardFlags( void )
 {
-    // return( REFGLOBAL( controls, keyboardFlags ) );
+
     return ControlGlobalz.keyboardFlags;
 }
 
@@ -1010,9 +888,7 @@ long GetHardwareKeyboardFlags( void )
 
 void SetHardwareKeyboardFlags( long flags )
 {
-unsigned char fuck[2];
-
-    // REFGLOBAL( controls, keyboardFlags ) = flags;
+    unsigned char fuck[2];
     ControlGlobalz.keyboardFlags = flags;
     fuck[0] = 0xED;                     // hit the LED reg
     fuck[1] = flags & 0x7;              // bits [2:0] are caps/num/scroll lock
@@ -1021,17 +897,9 @@ unsigned char fuck[2];
 
 
 
-
 void BackUpKeycodeTail( void )
 {
-    /*
-    if ( REFGLOBAL( controls, keycodeTail ) == 0 )              // back up; we'll try again later
-        REFGLOBAL( controls, keycodeTail ) = kKeybdDataFifoMask;
-    else
-        REFGLOBAL( controls, keycodeTail )--;
-    */
-
-    if( ControlGlobalz.keycodeTail == 0 )
+    if( ControlGlobalz.keycodeTail == 0 )                   // back up; we'll try again later
         ControlGlobalz.keycodeTail = kKeybdDataFifoMask;
     else
         ControlGlobalz.keycodeTail --;
@@ -1039,19 +907,17 @@ void BackUpKeycodeTail( void )
 
 
 
-
 unsigned char GetNextESKeyboardChar( void )
 {
-unsigned char raw;
-unsigned char map;
-unsigned long offset;
-unsigned char fuck[2];
-char       specialPending;
+    unsigned char raw;
+    unsigned char map;
+    unsigned long offset;
+    unsigned char fuck[2];
+    char       specialPending;
     
     specialPending = 0;
     map = kNoKey;
     
-    // if ( REFGLOBAL( controls, keyMapTable ) )
     if ( scancodeToAscii )
     {
         raw = GetNextESKeyboardRawcode();           // get next code out of buffer
@@ -1072,24 +938,19 @@ char       specialPending;
                 
             if ( raw < scancodeTableSize )       // valid code?
             {
-                // map = (REFGLOBAL( controls, keyMapTable )->mapTbl)[raw];
                 map = scancodeToAscii[raw];
                 
                 if ( map == kShiftKey )             
-                    // REFGLOBAL( controls, keyboardFlags ) &= ~kShiftDown;
                     ControlGlobalz.keyboardFlags &= ~kShiftDown;
 
                 if ( map == kAltKey )               
-                    // REFGLOBAL( controls, keyboardFlags ) &= ~kAltDown;
                     ControlGlobalz.keyboardFlags &= ~kAltDown;
 
                 if ( map == kControlKey )               
-                    // REFGLOBAL( controls, keyboardFlags ) &= ~kControlDown;
                     ControlGlobalz.keyboardFlags &= ~kControlDown;
 
                 if ( map == kCapsLockKey )          
-                    // REFGLOBAL( controls, keyboardFlags ) &= ~kCapsLockDown;     // caps lock up
-                    ControlGlobalz.keyboardFlags &= ~kCapsLockDown;
+                    ControlGlobalz.keyboardFlags &= ~kCapsLockDown;             // caps lock up
             }
             
             return( kNoKey );
@@ -1128,31 +989,23 @@ char       specialPending;
         // NORMAL CODES
         //
         
-        // if ( raw < (REFGLOBAL( controls, keyMapTable )->tblSectionSize) )       // valid code?
-        if( raw < scancodeTableSize )
+        if( raw < scancodeTableSize )                                              // valid code?
         {
-            // map = (REFGLOBAL( controls, keyMapTable )->mapTbl)[raw];            // map to lower case
-            map = scancodeToAscii[raw];
+            map = scancodeToAscii[raw];                                            // map to lower case
 
-            // if ( REFGLOBAL( controls, keyboardFlags ) & kShiftDown )            // shift key -> ALL shifted
-            if( ControlGlobalz.keyboardFlags & kShiftDown )
+            if( ControlGlobalz.keyboardFlags & kShiftDown )                        // shift key -> ALL shifted
             {
                 if ( (map >= 0x20) && (map <= 0x7E) )
                 {
-                    // offset = raw + REFGLOBAL( controls, keyMapTable )->tblSectionSize;  // use upper tbl
-                    // map = (REFGLOBAL( controls, keyMapTable )->mapTbl)[offset];         // map to shifted
-                    map = scancodeToAsciiShifted[raw];
+                    map = scancodeToAsciiShifted[raw];                              // map to shifted
                 }   
             }
             else
-                // if ( REFGLOBAL( controls, keyboardFlags ) & kCapsLocked )           // capslock key -> CHARS shifted
-                if( ControlGlobalz.keyboardFlags & kCapsLocked )
+                if( ControlGlobalz.keyboardFlags & kCapsLocked )                    // capslock key -> CHARS shifted
                 {
                     if ( (map >= 'a') && (map <= 'z') )
                     {
-                        // offset = raw + REFGLOBAL( controls, keyMapTable )->tblSectionSize;  // use upper tbl
-                        // map = (REFGLOBAL( controls, keyMapTable )->mapTbl)[offset];         // map to shifted
-                        map = scancodeToAsciiShifted[raw];
+                        map = scancodeToAsciiShifted[raw];                          // map to shifted
                     }
                 }
         }
@@ -1164,34 +1017,27 @@ char       specialPending;
         switch(map)
         {   
             case kShiftKey:
-                    // REFGLOBAL( controls, keyboardFlags ) |= kShiftDown;
                     ControlGlobalz.keyboardFlags |= kShiftDown;
                     return( kNoKey );
                     break;
         
             case kAltKey:
-                    // REFGLOBAL( controls, keyboardFlags ) |= kAltDown;
                     ControlGlobalz.keyboardFlags |= kAltDown;
                     return( kNoKey );
                     break;
         
             case kControlKey:
-                    // REFGLOBAL( controls, keyboardFlags ) |= kControlDown;
                     ControlGlobalz.keyboardFlags |= kControlDown;
                     return( kNoKey );
                     break;
         }
         
-        // if ( (map == kCapsLockKey) && !(REFGLOBAL( controls, keyboardFlags ) & kCapsLockDown) )
         if ( (map == kCapsLockKey) && !(ControlGlobalz.keyboardFlags & kCapsLockDown) )
         {
-            // REFGLOBAL( controls, keyboardFlags ) |= kCapsLockDown;
-            ControlGlobalz.keyboardFlags |= kCapsLockDown;
-            // REFGLOBAL( controls, keyboardFlags ) ^= kCapsLocked;            // flip caps lock state
-            ControlGlobalz.keyboardFlags ^= kCapsLocked;
+            ControlGlobalz.keyboardFlags |= kCapsLockDown;    
+            ControlGlobalz.keyboardFlags ^= kCapsLocked;                    // flip caps lock state
             fuck[0] = 0xED;                                                 // hit the LED reg
-            // fuck[1] = REFGLOBAL( controls, keyboardFlags ) & kCapsLocked;   // bits [2:0] are caps/num/scroll lock
-            fuck[1] = ControlGlobalz.keyboardFlags & kCapsLocked;
+            fuck[1] = ControlGlobalz.keyboardFlags & kCapsLocked;           // bits [2:0] are caps/num/scroll lock
             SendCmdToESKeyboard( fuck, 2 );
             return( kNoKey );
         }
@@ -1200,7 +1046,6 @@ char       specialPending;
         // Special Keys
         //
 
-        // if ( !(REFGLOBAL( controls, keyboardFlags ) & kReturnIsLF) && (map == 0x0A) )
         if( map == 0x0A )
             map = kEnterKey;
 
@@ -1236,24 +1081,17 @@ char       specialPending;
 
 
 
-
-
 unsigned char GetNextESKeyboardRawcode( void )
 {
-    // if ( REFGLOBAL( controls, keyboardPresent ) && (REFGLOBAL( controls, keycodeTail ) != REFGLOBAL( controls, keycodeHead )) )
     if( ControlGlobalz.keycodeTail != ControlGlobalz.keycodeHead )
     {
-        // REFGLOBAL( controls, keycodeTail )++;
         ControlGlobalz.keycodeTail ++;
-        // REFGLOBAL( controls, keycodeTail ) &= kKeybdDataFifoMask;
         ControlGlobalz.keycodeTail &= kKeybdDataFifoMask;
-        // return( REFGLOBAL( controls, keycodeBuf )[REFGLOBAL( controls, keycodeTail )] );
         return ControlGlobalz.keycodeBuf[ControlGlobalz.keycodeTail];
     }
     else
         return( 0xFF );
 }
-
 
 
 
@@ -1429,7 +1267,7 @@ void setDebugFlag(char *flagName, char flagLine, char flagNumber, char pass)
 
 void hexToAscii(unsigned char *sandwiches)
 {
-    // C369;
+    // C369 is the keyboard device ID
 
     unsigned char stuff[5];
     unsigned char i;
