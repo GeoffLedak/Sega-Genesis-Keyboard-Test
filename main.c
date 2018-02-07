@@ -9,9 +9,6 @@ unsigned char globalCounter = 0;
 
 void ReadCharacters();
 
-void putChar(char character);
-void advanceCursor();
-void putNewline();
 void WaitForVBlank();
 void readControllers();
 void readKeyboard();
@@ -36,9 +33,6 @@ void _vint_callback();
 void setDebugFlag(char *flagName, char flagLine, char flagNumber, char pass);
 
 char keyboardConnected = 0;
-
-char xPosition = 3;
-char yPosition = 19;
 
 char aButtonPressed = 0;
 char bButtonPressed = 0;
@@ -350,9 +344,9 @@ void drawBoxes()
 	put_str("\xB3                                  \xB3", 0x0000, 2, 24);
 	put_str("\xC0\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xD9", 0x0000, 2, 25);
 
-    put_str("OFF", 0x4000, 13, 3);
-    put_str("OFF", 0x4000, 13, 4);
-    put_str("OFF", 0x4000, 13, 5);
+    put_str("OFF", 0x0000, 13, 3);
+    put_str("OFF", 0x0000, 13, 4);
+    put_str("OFF", 0x0000, 13, 5);
 }
 
 
@@ -463,10 +457,11 @@ void readControllers() {
     if( buttons & SEGA_CTRL_A )
     {
         if( !aButtonPressed ) {
-            putChar('A');
 
             if( keyboardConnected )
             {
+                put_str("TRY", 0x0000, 13, 3);
+
                 unsigned char fuck[2];        
                 ControlGlobalz.keyboardFlags ^= kNumLocked;            // flip num lock state
                 fuck[0] = 0xED;                                        // hit the LED reg
@@ -486,10 +481,11 @@ void readControllers() {
     if ( buttons & SEGA_CTRL_B )
     {
         if( !bButtonPressed ) {
-            putChar('B');
 
             if( keyboardConnected )
             {
+                put_str("TRY", 0x0000, 13, 4);
+
                 unsigned char fuck[2];
                 // ControlGlobalz.keyboardFlags |= kCapsLockDown;          
                 ControlGlobalz.keyboardFlags ^= kCapsLocked;            // flip caps lock state
@@ -510,10 +506,11 @@ void readControllers() {
     if ( buttons & SEGA_CTRL_C )
     {
         if( !cButtonPressed ) {
-            putChar('C');
 
             if( keyboardConnected )
             {
+                put_str("TRY", 0x0000, 13, 5);
+
                 unsigned char fuck[2];        
                 ControlGlobalz.keyboardFlags ^= kScrollLocked;            // flip scroll lock state
                 fuck[0] = 0xED;                                           // hit the LED reg
@@ -533,7 +530,7 @@ void readControllers() {
     if ( buttons & SEGA_CTRL_START )
     {
         if( !startButtonPressed ) {
-            putNewline();
+
             startButtonPressed = 1;
         }
     }
@@ -1215,41 +1212,6 @@ void WaitForVBlank() {
 	while (!(*pw & (1 << 3)));	
 }
 
-
-void advanceCursor()
-{
-	xPosition++;
-
-	if( xPosition > 36 )
-	{
-		xPosition = 3;
-		yPosition++;
-		
-		if( yPosition > 24 )
-		{
-			yPosition = 19;
-		}
-	}
-}
-
-
-void putChar(char character)
-{
-	put_chr(character, 0x0000, xPosition, yPosition);
-	advanceCursor();
-}
-
-
-void putNewline()
-{
-	xPosition = 3;
-	yPosition++;
-	
-	if( yPosition > 24 )
-	{
-		yPosition = 19;
-	}
-}
 
 
 void setDebugFlag(char *flagName, char flagLine, char flagNumber, char pass)
