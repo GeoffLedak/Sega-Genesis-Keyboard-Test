@@ -16,13 +16,13 @@
 
 | Standard MegaDrive ROM header at 0x100
 
-        .ascii  "SEGA MD Example "      /* SEGA must be the first four chars for TMSS */
-        .ascii  "(C)2011         "
-        .ascii  "Example startup "      /* export name */
-        .ascii  "code for MD     "
+        .ascii  "SEGA MD Keyboard"      /* SEGA must be the first four chars for TMSS */
+        .ascii  "(C)2018         "
+        .ascii  "XBAND Keyboard  "      /* export name */
+        .ascii  "test ROM        "
         .ascii  "                "
-        .ascii  "Example startup "      /* domestic (Japanese) name */
-        .ascii  "code for MD     "
+        .ascii  "XBAND Keyboard  "      /* domestic (Japanese) name */
+        .ascii  "test ROM        "
         .ascii  "                "
         .ascii  "GM MK-0000 -00"
         .word   0x0000                  /* checksum - not needed */
