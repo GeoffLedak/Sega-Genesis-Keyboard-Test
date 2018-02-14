@@ -1,0 +1,42 @@
+C00000 is the VDP's base address
+
+C00000 happens to be VDP data
+
+but C00000 + 4 is C00004 :P
+which is VDP_CTRL
+
+8F02 is the value written to VDP_CTRL
+a1 points to C00000, but 4(a1) points to C00004
+
+
+
+
+
+move.w  #0x8F02,4(a1)           /* set INC to 2 */
+
+^^ sets vdp auto increment to 2 ^^
+
+so, when a word is written to VDP_DATA, the internal VDP address pointer increments by 2
+which means it points to the next tile
+
+no, not tile
+table entry
+
+well I meant entry referring to a tile
+not tile graphics data
+
+
+
+you check your X accumulator, and if it has reached 40, zero it out and add to Y
+and do the address calculations that make sense
+(also, any reason you aren't using VDP_DATA as a moniker for $C00000 and defining it at the top level?)
+
+
+
+tst.b   (a0) is a waste though
+can just test d0 and move to the vdp afterwards
+or branch out
+
+
+read this:
+http://md.squee.co/VDP
