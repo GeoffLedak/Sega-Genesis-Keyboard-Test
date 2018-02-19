@@ -362,3 +362,52 @@ delay:
         bgt.b   0b
         rts
 
+
+
+
+| void syscall_PRINT_STRING(char *str, int color);
+
+| entry: first arg = string address
+|        second arg = 0 for normal color font, N * 0x0200 for alternate color font
+
+        .global syscall_PRINT_STRING
+syscall_PRINT_STRING:
+        movea.l 4(sp),a0                /* string pointer */
+        move.l  8(sp),d0                /* color palette */
+        lea     0xC00000,a1
+        move.w  #0x8F02,4(a1)           /* set INC to 2 */
+        move.l  yCursor,d1               /* y coord */
+        lsl.l   #6,d1
+        or.l    xCursor,d1               /* cursor y<<6 | x */
+        add.w   d1,d1                   /* pattern names are words */
+        swap    d1
+        ori.l   #0x60000003,d1          /* OR cursor with VDP write VRAM at 0xE000 (scroll plane B) */
+        move.l  d1,4(a1)                /* write VRAM at location of cursor in plane B */
+1:
+        move.b  (a0)+,d0
+        move.w  d0,(a1)                 /* set pattern name for character */
+
+        addi.l #1, xCursor
+        cmpi.l #38, xCursor
+        bcc.s  newline
+
+tstend: tst.b   (a0)
+        bne.b   1b
+        rts
+
+ newline:
+        move.l  #0, xCursor             /*  set X cursor to zero     */
+        addi.l  #1, yCursor             /*  advance Y cursor         */
+
+        move.l  yCursor,d1               /* y coord */
+        lsl.l   #6,d1
+        or.l    xCursor,d1               /* cursor y<<6 | x */
+        add.w   d1,d1                   /* pattern names are words */
+        swap    d1
+        ori.l   #0x60000003,d1          /* OR cursor with VDP write VRAM at 0xE000 (scroll plane B) */
+        move.l  d1,4(a1)                /* write VRAM at location of cursor in plane B */
+
+        jmp     tstend
+
+
+

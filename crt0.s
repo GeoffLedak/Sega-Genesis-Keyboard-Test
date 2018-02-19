@@ -124,6 +124,16 @@ vblank_vector:
 gTicks:
         .long   0
 
+
+        .global xCursor
+xCursor:
+        .long   0
+
+        .global yCursor
+yCursor:
+        .long   0
+
+
 | Exception handlers
 
 exception:

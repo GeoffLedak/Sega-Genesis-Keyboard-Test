@@ -229,16 +229,7 @@ void readControllers() {
     {
         if( !aButtonPressed ) {
 
-            if( keyboardConnected )
-            {
-                put_str("TRY", 0x0000, 13, 3);
-
-                unsigned char fuck[2];        
-                ControlGlobalz.keyboardFlags ^= kNumLocked;            // flip num lock state
-                fuck[0] = 0xED;                                        // hit the LED reg
-                fuck[1] = ControlGlobalz.keyboardFlags & kNumLocked;   // bits [2:0] are caps/num/scroll lock
-                SendCmdToESKeyboard( fuck, 2 );
-            }
+            syscall_PRINT_STRING("cheese", 0x0000);
 
             aButtonPressed = 1;
         }
