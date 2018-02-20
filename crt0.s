@@ -133,6 +133,10 @@ xCursor:
 yCursor:
         .long   0
 
+        .global vScrollPos
+vScrollPos:
+        .long   0
+
 
 | Exception handlers
 

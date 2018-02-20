@@ -417,28 +417,11 @@ tstend: tst.b   (a0)
 
         .global syscall_SCROLL
 syscall_SCROLL:
-        move.l  #7, d6                  /* HScroll value */
-        move.l  #0x40020010, (0xC00004)
-        move.w  d6, (0xC00000)
+        move.l  vScrollPos, d6                  /* HScroll value */
+        addi.l  #8, vScrollPos
+        move.l  #0x40020010, (0xC00004) /* put Scroll Plane B into VDP control */
+        move.w  d6, (0xC00000)          /* put incremented scroll location into VDP data */
         rts
 
 
-
-
-
-/*
-
-    moveq   #0, d7                      ; Scroll the screen upwards
-    move.b  (LoggerPos), d7
-    addq.b  #1, d7
-    and.w   #$1F, d7
-    move.b  d7, (LoggerPos)
-    sub.b   #27, d7
-    lsl.w   #3, d7
-    move.l  #$40000010, ($C00004)
-    move.w  d7, ($C00000)
-    
-    rts                                 ; End of subroutine
-
-*/
 
