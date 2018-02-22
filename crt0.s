@@ -125,17 +125,21 @@ gTicks:
         .long   0
 
 
+
+| System Call Globals
+
         .global xCursor
 xCursor:
-        .long   0
+        .long   2
 
         .global yCursor
 yCursor:
-        .long   0
+        .long   2
 
         .global vScrollPos
 vScrollPos:
         .long   0
+
 
 
 | Exception handlers

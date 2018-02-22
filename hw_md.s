@@ -4,6 +4,16 @@
         .text
         .align  2
 
+
+| Define Constants
+        .equ VDP_DATA,                  0xC00000
+        .equ VDP_CONTROL,               0xC00004
+        .equ SCREEN_LEFT_EDGE,          2
+        .equ SCREEN_RIGHT_EDGE,         38
+
+
+
+
 | Initialize the hardware & load font tiles
         .global init_hardware
 init_hardware:
@@ -388,7 +398,7 @@ syscall_PRINT_STRING:
         move.w  d0,(a1)                 /* set pattern name for character */
 
         addi.l #1, xCursor
-        cmpi.l #38, xCursor
+        cmpi.l #SCREEN_RIGHT_EDGE, xCursor
         bcc.s  newline
 
 tstend: tst.b   (a0)
@@ -396,16 +406,16 @@ tstend: tst.b   (a0)
         rts
 
  newline:
-        move.l  #0, xCursor             /*  set X cursor to zero     */
-        addi.l  #1, yCursor             /*  advance Y cursor         */
+        move.l  #SCREEN_LEFT_EDGE, xCursor              /*  set X cursor to zero     */
+        addi.l  #1, yCursor                             /*  advance Y cursor         */
 
-        move.l  yCursor,d1               /* y coord */
+        move.l  yCursor,d1                              /* y coord */
         lsl.l   #6,d1
-        or.l    xCursor,d1               /* cursor y<<6 | x */
-        add.w   d1,d1                   /* pattern names are words */
+        or.l    xCursor,d1                              /* cursor y<<6 | x */
+        add.w   d1,d1                                   /* pattern names are words */
         swap    d1
-        ori.l   #0x60000003,d1          /* OR cursor with VDP write VRAM at 0xE000 (scroll plane B) */
-        move.l  d1,4(a1)                /* write VRAM at location of cursor in plane B */
+        ori.l   #0x60000003,d1                          /* OR cursor with VDP write VRAM at 0xE000 (scroll plane B) */
+        move.l  d1,4(a1)                                /* write VRAM at location of cursor in plane B */
 
         jmp     tstend
 
@@ -417,10 +427,10 @@ tstend: tst.b   (a0)
 
         .global syscall_SCROLL
 syscall_SCROLL:
-        addi.l  #8, vScrollPos            /* Increment vertical scroll position */
+        addi.l  #8, vScrollPos                  /* Increment vertical scroll position */
         move.l  vScrollPos, d6
-        move.l  #0x40020010, (0xC00004)   /* put Scroll Plane B into VDP control */
-        move.w  d6, (0xC00000)            /* put incremented scroll location into VDP data */
+        move.l  #0x40020010, (VDP_CONTROL)      /* put Scroll Plane B into VDP control */
+        move.w  d6, (VDP_DATA)                  /* put incremented scroll location into VDP data */
         rts
 
 

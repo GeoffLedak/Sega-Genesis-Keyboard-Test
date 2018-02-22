@@ -229,7 +229,7 @@ void readControllers() {
     {
         if( !aButtonPressed ) {
 
-            syscall_PRINT_STRING("cheese", 0x0000);
+            syscall_PRINT_STRING("waffles", 0x0000);
 
             aButtonPressed = 1;
         }
@@ -343,21 +343,13 @@ int FindESKeyboard(void) {
 
     *reg = kTR;                                         // turn off TH to start hshk seq
 
-    do {
-        *readScan = *reg & 0x0F;
-    }
+    do { *readScan = *reg & 0x0F; }
     while ( (*readScan != ((kbID >> 16) & 0xF)) && --timeout );     // 2nd nybble has no handshake
 
-    if ( !timeout )
-    {
-        // FAIL f2
-        setDebugFlag("f2", 4, 1, 0);
+    if ( !timeout ) {
         *reg = kTH + kTR;                               // make sure we leave with TH & TR hi
         return ( 0 );
     }
-
-    // PASS f2
-    setDebugFlag("f2", 4, 1, 1);
 
     readScan++;
 
@@ -372,15 +364,9 @@ int FindESKeyboard(void) {
     *reg = kTH + kTR;                                   // make sure we leave with TH & TR hi
 
     if ( *(ULong *) readBuf == kbID )                   // found a good Eric Smith Keyboard
-    {
-        hexToAscii(readBuf);
-        return ( 1 );
-    }
+        return (1);
     else
-    {
-        hexToAscii(readBuf);
-        return ( 0 );
-    }
+        return (0);
 }
 
 
@@ -417,14 +403,9 @@ void ReadESKeyboard ( void )
 
     if ( !timeout )
     {
-		// FAIL r2
-        setDebugFlag("r2", 5, 1, 0);
         *reg = kTH + kTR;                               // make sure we leave with TH & TR hi
         return;
     }
-
-	// PASS r2
-    setDebugFlag("r2", 5, 1, 1);
 	
     readScan++;
 
@@ -535,15 +516,10 @@ register            ULong       kbID = 0xC030609;
 
         if ( !timeout )
         {
-			// FAIL w2
-			setDebugFlag("w2", 7, 1, 0);
             *reg = kTH + kTR;                                   // make sure we leave with TH & TR hi
             return;
         }
 		
-		//PASS w2
-		setDebugFlag("w2", 7, 1, 1);
-    
         readScan++;                         
     
         hshkState = 0;                                          // start flipping TR
@@ -584,7 +560,6 @@ short GetHandshakeNibblePort2( short* hshkState, char *flagName, char flagLine, 
 
     if (*hshkState == -1)   // timed out, abort (see below)
 	{
-		setDebugFlag(flagName, flagLine, flagNumber, 0);
         return 0x0F;
 	}
 
@@ -593,10 +568,9 @@ short GetHandshakeNibblePort2( short* hshkState, char *flagName, char flagLine, 
         *reg |= kTR;            // raise TR, wait for TL high
         nop; nop;
         do {}
-        while (!(*reg & kTL) && --timeout);
+        while ( !(*reg & kTL) && --timeout );
         if (timeout)
         {
-			setDebugFlag(flagName, flagLine, flagNumber, 1);
             nop; nop;
             return *reg & 0x0F;
         }
@@ -609,7 +583,6 @@ short GetHandshakeNibblePort2( short* hshkState, char *flagName, char flagLine, 
         while ((*reg & kTL) && --timeout);
         if (timeout)
         {
-			setDebugFlag(flagName, flagLine, flagNumber, 1);
             nop; nop;
             return *reg & 0x0F;
         }
@@ -618,7 +591,6 @@ short GetHandshakeNibblePort2( short* hshkState, char *flagName, char flagLine, 
     // if we got this far, we've timed out. return 0xFFs to abort.
 
     *hshkState = -1;
-	setDebugFlag(flagName, flagLine, flagNumber, 0);
     return 0xFF;
 }
 
@@ -636,7 +608,6 @@ void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend, char *
 
     if (*hshkState == -1)   // timed out, abort (see below)
 	{
-		setDebugFlag(flagName, flagLine, flagNumber, 0);
         return;
 	}
 
@@ -650,7 +621,6 @@ void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend, char *
         while (!(*reg & kTL) && --timeout);
         if ( timeout )
 		{
-			setDebugFlag(flagName, flagLine, flagNumber, 1);
             return;
 		}
     }
@@ -662,14 +632,11 @@ void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend, char *
         while ((*reg & kTL) && --timeout);
         if ( timeout )
 		{
-			setDebugFlag(flagName, flagLine, flagNumber, 1);
             return;
 		}
     }
 
     // if we got this far, we've timed out. return 0xFFs to abort.
-	
-	setDebugFlag(flagName, flagLine, flagNumber, 0);
 	
     *hshkState = -1;
 }
@@ -960,36 +927,6 @@ void setDebugFlag(char *flagName, char flagLine, char flagNumber, char pass)
         put_str(flagName, 0x4000, 18 + flagNumber, flagLine);
     }
 }
-
-
-void hexToAscii(unsigned char *sandwiches)
-{
-    // C369 is the keyboard device ID
-
-    unsigned char stuff[5];
-    unsigned char i;
-
-    for( i = 0; i < 5; i++ )
-    {
-        if( i == 4 )
-            stuff[i] = '\0';
-        else
-        {
-            if( sandwiches[i] >= 0x00 && sandwiches[i] <= 0x09 )
-                stuff[i] = sandwiches[i] + 0x30;
-            else if( sandwiches[i] >= 0x0A && sandwiches[i] <= 0x0F )
-            {
-                stuff[i] = sandwiches[i] + 0x37;
-            }
-            else
-                stuff[i] = '-';
-        }
-    }
-
-    put_str(stuff, 0x0000, 32, 4);
-}
-
-
 
 
 
