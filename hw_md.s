@@ -409,6 +409,10 @@ tstend: tst.b   (a0)
         move.l  #SCREEN_LEFT_EDGE, xCursor              /*  set X cursor to zero     */
         addi.l  #1, yCursor                             /*  advance Y cursor         */
 
+        | if y ISN'T greater than #SCREEN_==BOTTOM==_EDGE, jump to set_cursor
+        | otherwise set y to #SCREEN_==TOP==_EDGE (2)
+
+set_cursor:
         move.l  yCursor,d1                              /* y coord */
         lsl.l   #6,d1
         or.l    xCursor,d1                              /* cursor y<<6 | x */
