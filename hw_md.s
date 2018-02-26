@@ -425,10 +425,15 @@ scrollPlaneB:
         moveq   #0,d0
         move.l  yCursor,d1
 
-        | if cursor is 
+        cmpi.l  #24,yCursor             /* if yCursor is greater than or equal to 24 */
+        bcc.s   sub24                   /* jump to sub24 */
+        addi.l  #8,d1                   /* otherwise add 8... */
+        jmp    continueLineClear        /* and jump to continueLineClear */
 
+sub24:
         subi.l  #24,d1
-
+        
+continueLineClear:
         lsl.l   #6,d1
         or.l    #0,d1
         add.w   d1,d1
