@@ -140,6 +140,10 @@ yCursor:
 vScrollPos:
         .long   0
 
+        .global scrollFlag
+scrollFlag:
+        .long   0
+
 
 
 | Exception handlers

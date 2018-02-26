@@ -413,14 +413,28 @@ newline:
         move.l  #SCREEN_LEFT_EDGE, xCursor              /*  set X cursor to zero     */
         addi.l  #1, yCursor                             /*  advance Y cursor         */
 		
+
+        | if scroll flag has been set to true (if scrollFlag is greater than zero)
+        | jump to scrollPlaneB
+
+        cmpi.l  #0, scrollFlag
+        bhi.s   scrollPlaneB
+
+
 	cmpi.l #SCREEN_BOTTOM_EDGE, yCursor		/* if yCursor is less than or equal to SCREEN_BOTTOM_EDGE */
 	bls.s 	shouldResetYcursor			/* jump to shouldResetYcursor */
 							/* ..otherwise scroll the screen down */
-														
+							
+
+scrollPlaneB:
 	addi.l  #8, vScrollPos                  	/* Increment vertical scroll position */
         move.l  vScrollPos, d6
         move.l  #0x40020010, (VDP_CONTROL)      	/* put Scroll Plane B into VDP control */
         move.w  d6, (VDP_DATA)                  	/* put incremented scroll location into VDP data */
+        move.b  #1, scrollFlag
+
+
+
 
 shouldResetYcursor:
 	cmpi.l 	#PLANE_VERTICAL_EDGE, yCursor		/* if yCursor is less than or equal to PLANE_VERTICAL_EDGE */
