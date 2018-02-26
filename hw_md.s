@@ -420,11 +420,36 @@ newline:
 	bls.s 	shouldResetYcursor			/* jump to shouldResetYcursor */
 							/* ..otherwise scroll the screen down */
 scrollPlaneB:
+
+        | clear top line
+        moveq   #0,d0
+        move.l  yCursor,d1
+
+        | if cursor is 
+
+        subi.l  #24,d1
+
+        lsl.l   #6,d1
+        or.l    #0,d1
+        add.w   d1,d1
+        swap    d1
+        ori.l   #0x60000003,d1
+        move.l  d1,4(a1)                /* write VRAM at plane B start */
+        move.w  #64,d1                  /* 64 equals one row */
+1:
+        move.w  d0,(a1)                 /* clear name pattern */
+        dbra    d1,1b
+
 	addi.l  #8, vScrollPos                  	/* Increment vertical scroll position */
         move.l  vScrollPos, d6
         move.l  #0x40020010, (VDP_CONTROL)      	/* put Scroll Plane B into VDP control */
         move.w  d6, (VDP_DATA)                  	/* put incremented scroll location into VDP data */
         move.b  #1, scrollFlag                          /* set scrollFlag to true */
+
+
+
+
+
 
 shouldResetYcursor:
 	cmpi.l 	#PLANE_VERTICAL_EDGE, yCursor		/* if yCursor is less than or equal to PLANE_VERTICAL_EDGE */
