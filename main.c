@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "hw_md.h"
-#include "structures.h"
 #include "scancodeTable.h"
 
 unsigned char globalCounter = 0;
