@@ -402,7 +402,7 @@ syscall_PRINT_STRING:
 
         addi.l #1, xCursor
         cmpi.l #SCREEN_RIGHT_EDGE, xCursor		/* if xCursor is greater than SCREEN_RIGHT_EDGE */
-        bcc.s  newline							/* jump to newline */
+        bcc.s  newline					/* jump to newline */
 
 testend:
 		tst.b   (a0)
@@ -413,19 +413,19 @@ newline:
         move.l  #SCREEN_LEFT_EDGE, xCursor              /*  set X cursor to zero     */
         addi.l  #1, yCursor                             /*  advance Y cursor         */
 		
-		cmpi.l #SCREEN_BOTTOM_EDGE, yCursor				/* if yCursor is less than or equal to SCREEN_BOTTOM_EDGE */
-		bls.s 	shouldResetYcursor						/* jump to shouldResetYcursor */
-														/* ..otherwise scroll the screen down */
+	cmpi.l #SCREEN_BOTTOM_EDGE, yCursor		/* if yCursor is less than or equal to SCREEN_BOTTOM_EDGE */
+	bls.s 	shouldResetYcursor			/* jump to shouldResetYcursor */
+							/* ..otherwise scroll the screen down */
 														
-		addi.l  #8, vScrollPos                  		/* Increment vertical scroll position */
+	addi.l  #8, vScrollPos                  	/* Increment vertical scroll position */
         move.l  vScrollPos, d6
-        move.l  #0x40020010, (VDP_CONTROL)      		/* put Scroll Plane B into VDP control */
-        move.w  d6, (VDP_DATA)                  		/* put incremented scroll location into VDP data */
-		
+        move.l  #0x40020010, (VDP_CONTROL)      	/* put Scroll Plane B into VDP control */
+        move.w  d6, (VDP_DATA)                  	/* put incremented scroll location into VDP data */
+
 shouldResetYcursor:
-		cmpi.l 	#PLANE_VERTICAL_EDGE, yCursor			/* if yCursor is less than or equal to PLANE_VERTICAL_EDGE */
-        bls.s 	set_cursor								/* jump to set_cursor */
-		move.l 	#0, yCursor								/* otherwise reset yCursor to zero */
+	cmpi.l 	#PLANE_VERTICAL_EDGE, yCursor		/* if yCursor is less than or equal to PLANE_VERTICAL_EDGE */
+        bls.s 	set_cursor				/* jump to set_cursor */
+	move.l 	#0, yCursor				/* otherwise reset yCursor to zero */
 
 set_cursor:
         move.l  yCursor,d1                              /* y coord */
