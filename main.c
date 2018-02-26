@@ -13,14 +13,6 @@ void WaitForVBlank();
 void readControllers();
 void readKeyboard();
 
-void scrollUp(textbox_t* self);
-void advanceWindowCursor(textbox_t* self);
-void drawCharToWindow(textbox_t* self, char theChar);
-void drawHexStringToWindow(textbox_t* self, short *theString);
-void drawCursor(textbox_t* self);
-void drawWindow(textbox_t* self);
-void drawPacketDumpWindow(textbox_t* self);
-
 short GetHandshakeNibblePort2( short* hshkState );
 void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend );
 
@@ -49,60 +41,22 @@ unsigned char scancodeTableSize = sizeof(scancodeToAscii) / sizeof(unsigned char
 
 ControlGlobals ControlGlobalz;
 
-short packetDumpArray[40];
-
-textbox_t console;
-textbox_t packetDump;
-
-
-
 
 
 int main(void)
 {
-	console.newlineFlag = 0;
-	console.drawFlag = 0;
-    console.scrollFlag = 0;
-	console.x = 3;
-	console.y = 19;
-	console.width = 34;
-	console.height = 6;
-	console.cursorX = console.x;
-	console.cursorY = console.y;
-	console.self = &console;
-	console.charBuffer = malloc( sizeof(unsigned char) * console.width * console.height );
-    console.scrollBuffer = malloc( sizeof(unsigned char) * console.width + 1 );
-
-    packetDump.newlineFlag = 0;
-    packetDump.drawFlag = 0;
-    packetDump.scrollFlag = 0;
-    packetDump.x = 3;
-    packetDump.y = 11;
-    packetDump.width = 34;
-    packetDump.height = 6;
-    packetDump.cursorX = packetDump.x;
-    packetDump.cursorY = packetDump.y;
-    packetDump.self = &packetDump;
-    packetDump.charBuffer = malloc( sizeof(unsigned char) * packetDump.width * packetDump.height );
-    packetDump.scrollBuffer = malloc( sizeof(unsigned char) * packetDump.width + 1 );
-
-
     // 0x0000 = grey
     // 0x2000 = green
     // 0x4000 = red
 
 	WaitForVBlank();
-	drawCursor(console.self);
 
     while ( 1 ) // endless loop
     {	
 		ReadCharacters();
-		drawWindow(console.self);
-        drawPacketDumpWindow(packetDump.self);
     }
 	
     return 0;
-
 }
 
 
@@ -177,7 +131,19 @@ void ReadCharacters()
         // Was it a letter, or a special?
         if (keyPress >= ' ')
         {
-			drawCharToWindow(console.self, keyPress);
+
+            // =======================================
+
+			// drawCharToWindow(console.self, keyPress);
+
+            // ADD CHAR TO A BUFFER HERE
+            // THEN DRAW DA BUFFER DURING VBLANK AND
+            // CLEAR BUFFER AFTER DRAW
+
+            // =======================================
+
+
+
         }
         else
         {
@@ -372,8 +338,6 @@ int FindESKeyboard(void) {
 
 void ReadESKeyboard ( void )
 {
-    unsigned char packetDumpIndex = 0;
-
                         UChar       readBuf[4];
     register            UChar*      readScan = readBuf;
     volatile register   UChar*      reg = (UChar*) kData2;      // only support keyboard on PORT 2!
@@ -419,9 +383,6 @@ void ReadESKeyboard ( void )
             temp <<= 4;
             temp |= GetHandshakeNibblePort2(&hshkState);
 
-            packetDumpArray[packetDumpIndex] = temp;
-            packetDumpIndex++;
-
             len--;                                                  // len includes data type byte
 
             if ( temp == kESKeycodeData )
@@ -434,9 +395,6 @@ void ReadESKeyboard ( void )
                     temp = GetHandshakeNibblePort2(&hshkState);
                     temp <<= 4;
                     temp |= GetHandshakeNibblePort2(&hshkState);
-
-                    packetDumpArray[packetDumpIndex] = temp;
-                    packetDumpIndex++;
 
                     readScan[ControlGlobalz.keycodeHead] = temp;
                     len--;
@@ -453,18 +411,10 @@ void ReadESKeyboard ( void )
                     temp <<= 4;
                     temp |= GetHandshakeNibblePort2(&hshkState);
 
-                    packetDumpArray[packetDumpIndex] = temp;
-                    packetDumpIndex++;
-
                     readScan[ControlGlobalz.statusHead] = temp;
                     len--;
                 }
             }
-
-        packetDumpArray[packetDumpIndex] = 0xFF;
-
-        drawHexStringToWindow(packetDump.self, packetDumpArray);
-
         }
 
         *reg = kTH + kTR;                               // make sure we leave with TH & TR hi
@@ -909,225 +859,3 @@ void WaitForVBlank() {
 }
 
 
-
-
-
-
-
-void scrollUp(textbox_t* self)
-{
-    int i, j;
-
-        for( i = 0; i < self->width; i++ )
-        {
-            for( j = 0; j < self->height; j++ )
-            {
-                *(self->charBuffer + self->height * i + j) = *(self->charBuffer + self->height * i + (j + 1) );
-            }
-        }
-}
-
-
-void advanceWindowCursor(textbox_t* self)
-{
-	self->cursorX++;
-
-	if( self->cursorX >= (self->x + self->width) )
-	{
-		self->cursorX = self->x;
-		self->cursorY++;
-		self->newlineFlag = 1;
-
-		if( self->cursorY >= (self->y + self->height) )
-		{
-            self->cursorY--;
-            scrollUp(self);
-            self->scrollFlag = 1;
-            self->newlineFlag = 0;
-		}
-	}
-
-	drawCursor(self);
-}
-
-
-void drawCharToWindow(textbox_t* self, char theChar)
-{
-	self->drawFlag = 1;
-	*(self->charBuffer + self->height * (self->cursorX - self->x) + (self->cursorY - self->y)) = theChar;
-	advanceWindowCursor(self);
-}
-
-
-void drawHexStringToWindow(textbox_t* self, short *theString)
-{
-    int i = 0;
-    int j = 0;
-
-    char tempArray[40];
-
-    while( theString[i] != 0xFF )
-    {
-
-        if( (theString[i] >> 4) >= 0x00 && (theString[i] >> 4) <= 0x09 )
-            tempArray[j] = (theString[i] >> 4) + 0x30;
-        else if( (theString[i] >> 4) >= 0x0A && (theString[i] >> 4) <= 0x0F )
-        {
-            tempArray[j] = (theString[i] >> 4) + 0x37;
-        }
-        else
-            tempArray[j] = '-';
-
-
-        j++;
-
-
-        if( (theString[i] & 0xF) >= 0x00 && (theString[i] & 0xF) <= 0x09 )
-            tempArray[j] = (theString[i] & 0xF) + 0x30;
-        else if( (theString[i] & 0xF) >= 0x0A && (theString[i] & 0xF) <= 0x0F )
-        {
-            tempArray[j] = (theString[i] & 0xF) + 0x37;
-        }
-        else
-            tempArray[j] = '-';
-
-
-        j++;
-        tempArray[j] = ' ';
-
-
-        i++;
-        j++;
-    }
-
-    tempArray[j] = '\0';
-
-    self->drawFlag = 1;
-
-    char *tempArrayIndex = tempArray;
-
-
-    if( self->cursorY >= (self->y + self->height - 1) )
-    {
-        scrollUp(self);
-    }
-
-
-    while( *tempArrayIndex != '\0' )
-    {   
-        *(self->charBuffer + self->height * (self->cursorX - self->x) + (self->cursorY - self->y)) = *tempArrayIndex;
-
-        self->cursorX++;
-
-        if( self->cursorX >= (self->x + self->width) )
-        {
-            self->cursorX = self->x;
-            self->cursorY++;
-
-            if( self->cursorY >= (self->y + self->height) )
-            {
-                self->cursorY--;
-                scrollUp(self);
-            }
-        }
-
-
-        tempArrayIndex++;
-    }
-
-
-    while( self->cursorX < (self->x + self->width) )
-    {
-        *(self->charBuffer + self->height * (self->cursorX - self->x) + (self->cursorY - self->y)) = ' ';
-        self->cursorX++;
-    }
-
-    self->cursorX = self->x;
-    self->cursorY++;
-
-    if( self->cursorY >= (self->y + self->height) )
-    {
-        self->cursorY--;
-    }
-
-}
-
-
-void drawCursor(textbox_t* self)
-{
-	put_chr(219, 0x0000, self->cursorX, self->cursorY);
-}
-
-
-void drawWindow(textbox_t* self)
-{
-	if(self->drawFlag)
-	{
-        if( self->scrollFlag )
-        {
-
-        int i, j;
-        unsigned char *point;
-
-        for( j = 0; j < self->height; j++ )
-        {
-            point = (self->scrollBuffer);
-
-            if( j != self->height - 1 )
-            {
-                for( i = 0; i < self->width; i++ )
-                {
-                    *point = *(self->charBuffer + self->height * i + j);
-                    point++;
-                }
-
-                *point = '\0';
-                put_str( self->scrollBuffer, 0x0000, self->x, self->y + j );
-            }
-            else
-            {
-                put_str( "                                 ", 0x0000, self->x + 1, self->y + j );
-            }
-
-        }
-
-        self->scrollFlag = 0;
-
-        }
-		else if(!self->newlineFlag)
-			put_chr(*(self->charBuffer + self->height * (self->cursorX - self->x - 1) + (self->cursorY - self->y) ), 0x0000, self->cursorX - 1, self->cursorY);
-		else
-		{
-			put_chr(*(self->charBuffer + self->height * (self->width - 1) + (self->cursorY - self->y - 1) ), 0x0000, self->x + self->width - 1, self->cursorY - 1);
-			self->newlineFlag = 0;
-		}
-
-		self->drawFlag = 0;
-	}
-}
-
-
-void drawPacketDumpWindow(textbox_t* self)
-{
-    if(self->drawFlag)
-    {
-        int i, j;
-        unsigned char *point;
-
-        for( j = 0; j < self->height; j++ )
-        {
-            point = (self->scrollBuffer);
-
-            for( i = 0; i < self->width; i++ )
-            {
-                *point = *(self->charBuffer + self->height * i + j);
-                point++;
-            }
-
-            *point = '\0';
-            put_str( self->scrollBuffer, 0x0000, self->x, self->y + j );
-        }
-
-        self->drawFlag = 0;
-    }
-}
