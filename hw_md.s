@@ -10,6 +10,9 @@
         .equ VDP_CONTROL,               0xC00004
         .equ SCREEN_LEFT_EDGE,          2
         .equ SCREEN_RIGHT_EDGE,         38
+		.equ SCREEN_TOP_EDGE,			2
+		.equ SCREEN_BOTTOM_EDGE,		25
+		.equ PLANE_VERTICAL_EDGE,		31				| 0 - 31
 
 
 
@@ -398,19 +401,21 @@ syscall_PRINT_STRING:
         move.w  d0,(a1)                 /* set pattern name for character */
 
         addi.l #1, xCursor
-        cmpi.l #SCREEN_RIGHT_EDGE, xCursor
-        bcc.s  newline
+        cmpi.l #SCREEN_RIGHT_EDGE, xCursor		/* if xCursor is greater than SCREEN_RIGHT_EDGE */
+        bcc.s  newline							/* jump to newline */
 
-tstend: tst.b   (a0)
+testend:
+		tst.b   (a0)
         bne.b   1b
         rts
 
  newline:
         move.l  #SCREEN_LEFT_EDGE, xCursor              /*  set X cursor to zero     */
         addi.l  #1, yCursor                             /*  advance Y cursor         */
-
-        | if y ISN'T greater than #SCREEN_==BOTTOM==_EDGE, jump to set_cursor
-        | otherwise set y to #SCREEN_==TOP==_EDGE (2)
+		
+		cmpi.l 	#PLANE_VERTICAL_EDGE, yCursor			/* if yCursor is less than or equal to PLANE_VERTICAL_EDGE */
+        bls.s 	set_cursor								/* jump to set_cursor */
+		move.l 	#0, yCursor								/* otherwise reset yCursor to zero */
 
 set_cursor:
         move.l  yCursor,d1                              /* y coord */
@@ -421,7 +426,7 @@ set_cursor:
         ori.l   #0x60000003,d1                          /* OR cursor with VDP write VRAM at 0xE000 (scroll plane B) */
         move.l  d1,4(a1)                                /* write VRAM at location of cursor in plane B */
 
-        jmp     tstend
+        jmp     testend
 
 
 
