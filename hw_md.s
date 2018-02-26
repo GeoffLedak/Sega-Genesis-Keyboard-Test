@@ -451,11 +451,6 @@ continueLineClear:
         move.w  d6, (VDP_DATA)                  	/* put incremented scroll location into VDP data */
         move.b  #1, scrollFlag                          /* set scrollFlag to true */
 
-
-
-
-
-
 shouldResetYcursor:
 	cmpi.l 	#PLANE_VERTICAL_EDGE, yCursor		/* if yCursor is less than or equal to PLANE_VERTICAL_EDGE */
         bls.s 	set_cursor				/* jump to set_cursor */
