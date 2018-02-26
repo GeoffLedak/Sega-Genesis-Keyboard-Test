@@ -37,6 +37,9 @@ unsigned char scancodeTableSize = sizeof(scancodeToAscii) / sizeof(unsigned char
 
 ControlGlobals ControlGlobalz;
 
+unsigned char charBuff[16];
+char charBuffIndex = 0;
+
 
 
 int main(void)
@@ -64,6 +67,12 @@ void _vint_callback()	// Called During V-Blank Interrupt
 
 	if( globalCounter >= 60 ) globalCounter = 0;
 	else globalCounter++;
+
+    if( charBuffIndex > 0 )
+    {
+        syscall_PRINT_STRING(charBuff, 0x0000);
+        charBuffIndex = 0;
+    }
 }
 
 
@@ -127,6 +136,14 @@ void ReadCharacters()
         // Was it a letter, or a special?
         if (keyPress >= ' ')
         {
+
+            if( charBuffIndex < 15 )
+            {
+                charBuff[charBuffIndex] = keyPress;
+                charBuffIndex++;
+                charBuff[charBuffIndex] = '\0';
+            }
+
 
             // =======================================
 
