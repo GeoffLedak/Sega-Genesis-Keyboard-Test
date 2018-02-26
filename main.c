@@ -20,7 +20,6 @@ void drawHexStringToWindow(textbox_t* self, short *theString);
 void drawCursor(textbox_t* self);
 void drawWindow(textbox_t* self);
 void drawPacketDumpWindow(textbox_t* self);
-void drawBoxes();
 
 short GetHandshakeNibblePort2( short* hshkState );
 void PutHandshakeNibblePort2( short* hshkState, unsigned char byteToSend );
@@ -93,7 +92,6 @@ int main(void)
     // 0x4000 = red
 
 	WaitForVBlank();
-    drawBoxes();
 	drawCursor(console.self);
 
     while ( 1 ) // endless loop
@@ -296,7 +294,7 @@ void readKeyboard() {
     if ( FindESKeyboard() ) {
 
         keyboardConnected = 1;
-        put_str("Found ES Keyboard!", 0x2000, 19, 3);
+        // put_str("Found ES Keyboard!", 0x2000, 19, 3);
 
         ReadESKeyboard();
         WriteESKeyboard();
@@ -304,7 +302,7 @@ void readKeyboard() {
     }
 	else{
         keyboardConnected = 0;
-		put_str("Keyboard not found", 0x4000, 19, 3);
+		// put_str("Keyboard not found", 0x4000, 19, 3);
 	}
 }
 
@@ -900,8 +898,6 @@ unsigned char GetNextESKeyboardRawcode( void )
 
 
 
-
-
 void WaitForVBlank() {
 	
 	volatile unsigned short *pw;
@@ -916,42 +912,6 @@ void WaitForVBlank() {
 
 
 
-
-
-
-
-
-void drawBoxes()
-{
-    put_str("\xC9\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xD1\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBB", 0x0000, 2, 2);
-	put_str("\xBA""Num            ""\xB3                  \xBA", 0x0000, 2, 3);
-	put_str("\xBA""Caps           ""\xB3                  \xBA", 0x0000, 2, 4);
-	put_str("\xBA""Scroll         ""\xB3                  \xBA", 0x0000, 2, 5);
-	put_str("\xBA               \xB3                  \xBA", 0x0000, 2, 6);
-	put_str("\xBA               \xB3                  \xBA", 0x0000, 2, 7);
-	put_str("\xBA               \xB3                  \xBA", 0x0000, 2, 8);
-	put_str("\xC8\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCF\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBC", 0x0000, 2, 9);
-	put_str("\xDA\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xBF", 0x0000, 2, 10);
-	put_str("\xB3                                  \xB3", 0x0000, 2, 11);
-	put_str("\xB3                                  \xB3", 0x0000, 2, 12);
-	put_str("\xB3                                  \xB3", 0x0000, 2, 13);
-	put_str("\xB3                                  \xB3", 0x0000, 2, 14);
-	put_str("\xB3                                  \xB3", 0x0000, 2, 15);
-	put_str("\xB3                                  \xB3", 0x0000, 2, 16);
-	put_str("\xC0\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xD9", 0x0000, 2, 17);
-	put_str("\xDA\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xBF", 0x0000, 2, 18);
-	put_str("\xB3                                  \xB3", 0x0000, 2, 19);
-	put_str("\xB3                                  \xB3", 0x0000, 2, 20);
-	put_str("\xB3                                  \xB3", 0x0000, 2, 21);
-	put_str("\xB3                                  \xB3", 0x0000, 2, 22);
-	put_str("\xB3                                  \xB3", 0x0000, 2, 23);
-	put_str("\xB3                                  \xB3", 0x0000, 2, 24);
-	put_str("\xC0\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xD9", 0x0000, 2, 25);
-
-    put_str("OFF", 0x0000, 13, 3);
-    put_str("OFF", 0x0000, 13, 4);
-    put_str("OFF", 0x0000, 13, 5);
-}
 
 
 void scrollUp(textbox_t* self)
