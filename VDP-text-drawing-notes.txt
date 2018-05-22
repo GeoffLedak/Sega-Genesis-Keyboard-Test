@@ -31,7 +31,8 @@ you check your X accumulator, and if it has reached 40, zero it out and add to Y
 and do the address calculations that make sense
 (also, any reason you aren't using VDP_DATA as a moniker for $C00000 and defining it at the top level?)
 
-
+Jorge: ||
+       \/
 
 tst.b   (a0) is a waste though
 can just test d0 and move to the vdp afterwards
