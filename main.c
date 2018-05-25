@@ -872,3 +872,34 @@ void WaitForVBlank() {
 }
 
 
+
+
+
+void PrintHexString(unsigned char *hexValues, short length)
+{
+    unsigned char hexString[length + 1];
+    unsigned char i;
+
+    for( i = 0; i < (length + 1); i++ )
+    {
+        if( i == length )
+        {
+            hexString[length] = '\0';
+        }
+        else
+        {
+            if( hexValues[i] >= 0x00 && hexValues[i] <= 0x09 )
+                hexString[i] = hexValues[i] + 0x30;
+            else if( hexValues[i] >= 0x0A && hexValues[i] <= 0x0F )
+            {
+                hexString[i] = hexValues[i] + 0x37;
+            }
+            else
+                hexString[i] = '-';
+        }
+    }
+
+    syscall_PRINT_STRING(hexString, 0x0000);
+}
+
+
