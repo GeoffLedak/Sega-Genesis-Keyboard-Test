@@ -69,7 +69,7 @@ void _external_callback()   // Called during External Interrupt
 void _vint_callback()	// Called during V-Blank Interrupt
 {
     readControllers();
-    readKeyboard();
+    // readKeyboard();
 
 	if( globalCounter >= 60 ) globalCounter = 0;
 	else globalCounter++;
