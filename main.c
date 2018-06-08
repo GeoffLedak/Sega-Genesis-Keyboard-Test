@@ -24,6 +24,7 @@ unsigned char GetNextESKeyboardChar( void );
 unsigned char GetNextESKeyboardRawcode( void );
 void BackUpKeycodeTail();
 
+void _external_callback();
 void _vint_callback();
 
 char keyboardConnected = 0;
@@ -59,8 +60,13 @@ int main(void)
 }
 
 
+void _external_callback()   // Called during External Interrupt
+{
+    syscall_PRINT_STRING("cheese", 0x0000);    
+}
 
-void _vint_callback()	// Called During V-Blank Interrupt
+
+void _vint_callback()	// Called during V-Blank Interrupt
 {
     readControllers();
     readKeyboard();

@@ -165,7 +165,7 @@ InitVDPRegs:
         .byte   0x00    /* 8800 => write reg 8 = always 0 */
         .byte   0x00    /* 8900 => write reg 9 = always 0 */
         .byte   0x00    /* 8A00 => write reg 10 = HINT = 0 */
-        .byte   0x00    /* 8B00 => write reg 11 = /IE2 (no EXT INT), full scroll */
+        .byte   0x08    /* 8B08 => write reg 11 = /IE2 (enable EXT INT), full scroll */
         .byte   0x81    /* 8C81 => write reg 12 = H40 mode, no lace, no shadow/hilite */
         .byte   0x2B    /* 8D2B => write reg 13 = HScroll Tbl = 0xAC00 */
         .byte   0x00    /* 8E00 => write reg 14 = always 0 */

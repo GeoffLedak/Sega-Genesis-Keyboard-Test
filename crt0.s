@@ -8,7 +8,7 @@
         .long   0x01000000,initialize,exception,exception,exception,exception,exception,exception
         .long   exception,exception,exception,exception,exception,exception,exception,exception
         .long   exception,exception,exception,exception,exception,exception,exception,exception
-        .long   exception,exception,exception,exception,hblank,exception,vblank,exception
+        .long   exception,exception,external,exception,hblank,exception,vblank,exception
         .long   exception,exception,exception,exception,exception,exception,exception,exception
         .long   exception,exception,exception,exception,exception,exception,exception,exception
         .long   exception,exception,exception,exception,exception,exception,exception,exception
@@ -115,6 +115,8 @@ skip_tmss:
 exception_vector:
         .long   0
         .global exception_vector
+external_vector:
+        .long   0
 hblank_vector:
         .long   0
         .global exception_vector
@@ -154,6 +156,12 @@ exception:
         rts
 1:
         addq.l  #4,sp
+        rte
+
+external:
+        movem.l d0-d1/a0-a1,-(sp)
+        jsr _external_callback
+        movem.l (sp)+, d0-d1/a0-a1
         rte
 
 hblank:
