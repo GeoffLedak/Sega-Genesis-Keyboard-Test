@@ -238,7 +238,8 @@ void readControllers() {
             {
                 put_str("TRY", 0x0000, 13, 5);
 
-                unsigned char fuck[2];        
+                unsigned char fuck[2];
+				// ControlGlobalz.keyboardFlags |= kCapsLockDown; 
                 ControlGlobalz.keyboardFlags ^= kCapsLocked;            // flip scroll lock state
                 fuck[0] = 0xED;                                         // hit the LED reg
                 fuck[1] = ControlGlobalz.keyboardFlags & kCapsLocked;   // bits [2:0] are caps/num/scroll lock
