@@ -326,7 +326,7 @@ void ReadCharacters()
         }
         
         // Was it a letter, or a special?
-        if (keyPress >= ' ')
+        if (keyPress == '\n' || keyPress >= ' ')
         {
 
             if( charBuffIndex < 15 )
@@ -994,8 +994,12 @@ unsigned char GetNextESKeyboardChar( void )
         // Special Keys
         //
 
-        if( map == 0x0A )
-            map = kEnterKey;
+
+        // Let's leave it as 0x0A
+
+        // if( map == 0x0A )
+        //     map = kEnterKey;
+
 
         if ( specialPending )
         {

@@ -398,6 +398,10 @@ syscall_PRINT_STRING:
         move.l  d1,4(a1)                /* write VRAM at location of cursor in plane B */
 1:
         move.b  (a0)+,d0
+
+        cmpi.b #0x0A, d0                /* check if it is the enter key (0xA) */
+        beq.s  enterPressed                  /* if it is, then jump to newline subroutine */
+
         move.w  d0,(a1)                 /* set pattern name for character */
 
         addi.l #1, xCursor
@@ -408,6 +412,12 @@ testend:
 	tst.b   (a0)
         bne.b   1b
         rts
+
+
+enterPressed:
+        /* increment a0 here ??? */
+        addq.l #2, a0
+
 
 newline:
         move.l  #SCREEN_LEFT_EDGE, xCursor              /*  set X cursor to zero     */
