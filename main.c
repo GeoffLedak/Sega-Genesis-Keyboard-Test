@@ -1,7 +1,7 @@
 #include "hw_md.h"
 #include "scancodeTable.h"
 
-unsigned char globalCounter = 0;
+unsigned long globalCounter = 0;
 
 void ReadCharacters();
 
@@ -43,13 +43,46 @@ char charBuffIndex = 0;
 
 
 
+
+typedef unsigned char       UChar;
+typedef unsigned long       ULong;
+
+#define kData2      0xA10005
+#define kCtl2       0xA1000B
+#define kSerial2    0xA10019
+
+#define kTH         0x40            // controller mode control line
+#define kTR         0x20            // controller handshake request
+#define kTL         0x10            // controller handshake acknowledge
+
+#define kDataLines  0x0F            // data lines for 3-line hshk communication
+
+#define nop          __asm__ __volatile__ ("nop\n\t");
+
+
+
+
 int main(void)
 {
+	volatile register UChar* reg = (UChar*) kData2;     // only support keyboard on PORT 2!
+	
     // 0x0000 = grey
     // 0x2000 = green
     // 0x4000 = red
 
 	WaitForVBlank();
+	
+	*(char *)kCtl2 = 0x80;         // set bit 7
+	
+	*(reg) &= ~kTH;					// TH low
+	*(char *)kSerial2 = 0;			// clear serial modes
+	*(char *)kCtl2 &= ~kTH;         // make TH an input
+	
+	*(reg) &= ~kTR;					// TR low
+	*(char *)kCtl2 &= ~kTR;         // make TR an input
+	
+	WaitForVBlank();
+	
 
     while ( 1 ) // endless loop
     {	
@@ -60,19 +93,172 @@ int main(void)
 }
 
 
+
+
+void PrintHexString(unsigned char hexValue)
+{
+	unsigned char upperNibble = hexValue >> 4;
+	unsigned char lowerNibble = hexValue & 0xF;
+	
+	if( upperNibble >= 0 && upperNibble <= 9 )
+		upperNibble += 48;
+	else
+		upperNibble += 55;
+	
+	if( lowerNibble >= 0 && lowerNibble <= 9 )
+		lowerNibble += 48;
+	else
+		lowerNibble += 55;
+
+
+	
+	
+	// hexString[0] = (hexValue >> 4)  + 48;
+	// hexString[1] = (hexValue & 0xF) + 48;
+
+	
+	
+	if( charBuffIndex < 15 )
+	{
+		charBuff[charBuffIndex] = upperNibble;
+		charBuffIndex++;
+		charBuff[charBuffIndex] = '\0';
+	}
+	
+	if( charBuffIndex < 15 )
+	{
+		charBuff[charBuffIndex] = lowerNibble;
+		charBuffIndex++;
+		charBuff[charBuffIndex] = '\0';
+	}	
+}
+
+
+
+
 void _external_callback()   // Called during External Interrupt
 {
-    syscall_PRINT_STRING("cheese", 0x0000);    
+    register            UChar*      readScan = ControlGlobalz.keycodeBuf;
+	volatile register   UChar*      reg = (UChar*) kData2;
+	
+	static unsigned short bitcount = 0;
+	static unsigned short incoming = 0;
+	static unsigned short prev_ms = 0;
+	unsigned short now_ms;
+	unsigned char n, val;
+
+	val = *reg & kTR;
+	
+	if( val > 1)
+		val = 1;
+	
+	// now_ms = millis();
+	now_ms = globalCounter;
+
+	// if (now_ms - prev_ms > 250)
+
+	if (now_ms - prev_ms > 1)
+	{
+		bitcount = 0;
+		incoming = 0;
+	}
+	
+	prev_ms = now_ms;
+	
+	n = bitcount - 1;
+
+	if (n <= 7)
+	{
+		incoming |= (val << n);
+	}
+
+	bitcount++;
+
+	if (bitcount == 11)
+	{
+		// unsigned short swapped = (incoming>>8) | (incoming<<8);
+		
+		// syscall_PRINT_STRING(incoming, 0x0000);
+		
+		
+		/*
+		if( charBuffIndex < 15 )
+		{
+			charBuff[charBuffIndex] = 'P';
+			charBuffIndex++;
+			charBuff[charBuffIndex] = '\0';
+		}
+		*/
+		
+		// PrintHexString(incoming);
+
+
+
+/*
+        if( charBuffIndex < 15 )
+        {
+
+
+
+            while (incoming) {
+
+                if (incoming & 1)
+                {
+                    charBuff[charBuffIndex] = '1';
+                    charBuffIndex++;
+
+                }
+                else
+                {
+                    charBuff[charBuffIndex] = '0';
+                    charBuffIndex++;
+                }
+
+                incoming >>= 1;
+            }
+
+
+                charBuff[charBuffIndex] = ' ';
+                charBuffIndex++;
+                charBuff[charBuffIndex] = '\0';
+                charBuffIndex++; 
+        }
+*/
+		
+		
+		// if(incoming != 0xF0)
+        // {
+    		ControlGlobalz.keycodeHead ++;                                  // bump head 
+    		ControlGlobalz.keycodeHead &= kKeybdDataFifoMask;               // circular buf
+    		readScan[ControlGlobalz.keycodeHead] = incoming;
+        // }
+
+
+
+
+
+		
+		
+		bitcount = 0;
+		incoming = 0;
+	}
+	
+	
+	
+	
+	 
 }
 
 
 void _vint_callback()	// Called during V-Blank Interrupt
 {
     readControllers();
-    // readKeyboard();
+    readKeyboard();
 
-	if( globalCounter >= 60 ) globalCounter = 0;
-	else globalCounter++;
+	// if( globalCounter >= 60 ) globalCounter = 0;
+	// else globalCounter++;
+	
+	globalCounter++;
 
     if( charBuffIndex > 0 )
     {
@@ -276,6 +462,8 @@ void readControllers() {
 
 void readKeyboard() {
 
+
+
     if ( FindESKeyboard() ) {
 
         keyboardConnected = 1;
@@ -285,27 +473,15 @@ void readKeyboard() {
         WriteESKeyboard();
         EmulateJoypadWithKeyboard();
     }
-	else{
+	else {
         keyboardConnected = 0;
 		// put_str("Keyboard not found", 0x4000, 19, 3);
+        EmulateJoypadWithKeyboard();
 	}
 }
 
 
-typedef unsigned char       UChar;
-typedef unsigned long       ULong;
 
-#define kData2      0xA10005
-#define kCtl2       0xA1000B
-#define kSerial2    0xA10019
-
-#define kTH         0x40            // controller mode control line
-#define kTR         0x20            // controller handshake request
-#define kTL         0x10            // controller handshake acknowledge
-
-#define kDataLines  0x0F            // data lines for 3-line hshk communication
-
-#define nop          __asm__ __volatile__ ("nop\n\t");
 
 int FindESKeyboard(void) {
     UChar readBuf[4];
