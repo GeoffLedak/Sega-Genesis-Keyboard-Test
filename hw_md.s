@@ -400,7 +400,7 @@ syscall_PRINT_STRING:
         move.b  (a0)+,d0
 
         cmpi.b #0x0A, d0                /* check if it is the enter key (0xA) */
-        beq.s  enterPressed                  /* if it is, then jump to newline subroutine */
+        beq.s  newline                  /* if it is, then jump to newline subroutine */
 
         move.w  d0,(a1)                 /* set pattern name for character */
 
@@ -412,11 +412,6 @@ testend:
 	tst.b   (a0)
         bne.b   1b
         rts
-
-
-enterPressed:
-        /* increment a0 here ??? */
-        addq.l #2, a0
 
 
 newline:
