@@ -312,6 +312,7 @@ void readControllers() {
 }
 
 
+/*
 void readKeyboard() {
 
     if ( FindESKeyboard() ) {
@@ -328,6 +329,72 @@ void readKeyboard() {
 		put_str("Keyboard not found", 0x4000, 19, 3);
 	}
 }
+*/
+
+
+long samplePhase = 0;
+
+void readKeyboard()
+{
+register short	whichRead = 0;		// +1 read controls, -1 sample controller types
+register long	newPhase;
+
+	// to avoid sucking down too much CPU, we do a few things based on
+	// a phase counter.  We read the controls 15 times per second (instead
+	// of 60), and every two seconds, we replace a controller read with
+	// a controller-type sample.  This allows the user to change controllers
+	// and we'll figure it out.
+	
+	newPhase = samplePhase - 1;
+	if (newPhase < 0)	{
+		whichRead = -1;
+		newPhase = 2 * 60;						// recheck in 2 secs
+	}
+	else
+	if ((newPhase & 3) == 0)
+		whichRead = 1;
+
+	samplePhase = newPhase;
+		
+	if (whichRead != 0)	{
+		
+		if (whichRead < 0)
+		{
+			if ( FindESKeyboard() )									// do we have an Eric Smith keyboard?
+			{
+				if (!keyboardConnected)
+				{
+					unsigned char fuck;
+					fuck = 0xFF;						/* reset keyboard */
+					SendCmdToESKeyboard( &fuck, 1 );
+					WriteESKeyboard();
+					keyboardConnected = 1;
+					ControlGlobalz.keyboardFlags = 0L;
+					
+					put_str("Found ES Keyboard!", 0x2000, 19, 3);
+				}	
+			}
+			else
+			{
+				keyboardConnected = 0;
+				put_str("Keyboard not found", 0x4000, 19, 3);
+			}
+		}
+		else
+		{
+			if ( keyboardConnected )
+			{
+				ReadESKeyboard();
+				WriteESKeyboard();
+				EmulateJoypadWithKeyboard();
+			}
+		}
+	}	// whichRead != 0
+}
+
+
+
+
 
 
 typedef unsigned char       UChar;
