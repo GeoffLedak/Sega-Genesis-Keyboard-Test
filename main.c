@@ -314,16 +314,26 @@ void readControllers() {
 
 void readKeyboard() {
 
-    if ( FindESKeyboard() ) {
-
-        keyboardConnected = 1;
+    if ( FindESKeyboard() )
+	{
+		if (!keyboardConnected)
+		{
+			unsigned char fuck;
+			fuck = 0xFF;						/* reset keyboard */
+			SendCmdToESKeyboard( &fuck, 1 );
+			WriteESKeyboard();
+			keyboardConnected = 1;
+			ControlGlobalz.keyboardFlags = 0L;
+		} 
+	
         put_str("Found ES Keyboard!", 0x2000, 19, 3);
 
         ReadESKeyboard();
         WriteESKeyboard();
         EmulateJoypadWithKeyboard();
     }
-	else{
+	else
+	{
         keyboardConnected = 0;
 		put_str("Keyboard not found", 0x4000, 19, 3);
 	}
