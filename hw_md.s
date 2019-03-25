@@ -390,7 +390,6 @@ syscall_PRINT_STRING:
 
 
 lea     SpriteDesc1, a0     /* ; Sprite table data */
-move.w  #0x1, d0            /* ; 1 sprite */
 jsr     LoadSpriteTables
 
 
@@ -504,7 +503,7 @@ syscall_SCROLL:
 
 SpriteDesc1:
 dc.w 0x0080            /* Y coord (+ 128) */
-dc.b 0b00001111        /* Width (bits 0-1) and height (bits 2-3) */
+dc.b 0b00000000        /* Width (bits 0-1) and height (bits 2-3) */
 dc.b 0x00              /* Index of next sprite (linked list) */
 dc.b 0x00              /* H/V flipping (bits 3/4), palette index (bits 5-6), priority (bit 7) */
 dc.b 0x32              /* Index of first tile   (was Sprite1TileID) */
@@ -514,15 +513,9 @@ dc.w 0x0080            /* X coord (+ 128) */
 
 LoadSpriteTables:
   /* ; a0 - Sprite data address */
-  /* ; d0 - Number of sprites */
+
    move.l    #VDP_WRITE_SPRITE_TABLE, (VDP_CONTROL)
- 
-   subq.b    #0x1, d0                /* ; 2 sprites attributes */
-   AttrCopy:
    move.l    (a0)+, VDP_DATA
-   move.l    (a0)+, VDP_DATA
-   dbra    d0, AttrCopy
- 
    rts
 
 
