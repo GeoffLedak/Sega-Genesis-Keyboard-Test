@@ -388,12 +388,6 @@ delay:
 syscall_PRINT_STRING:
 
 
-
-lea     SpriteDesc1, a0     /* ; Sprite table data */
-jsr     LoadSpriteTables
-
-
-
         movea.l 4(sp),a0                /* string pointer */
         move.l  8(sp),d0                /* color palette */
         lea     0xC00000,a1
@@ -498,25 +492,6 @@ syscall_SCROLL:
 
 
 
-
-
-
-SpriteDesc1:
-dc.w 0x0080            /* Y coord (+ 128) */
-dc.b 0b00000000        /* Width (bits 0-1) and height (bits 2-3) */
-dc.b 0x00              /* Index of next sprite (linked list) */
-dc.b 0x00              /* H/V flipping (bits 3/4), palette index (bits 5-6), priority (bit 7) */
-dc.b 0x32              /* Index of first tile   (was Sprite1TileID) */
-dc.w 0x0080            /* X coord (+ 128) */
-
-
-
-LoadSpriteTables:
-  /* ; a0 - Sprite data address */
-
-   move.l    #VDP_WRITE_SPRITE_TABLE, (VDP_CONTROL)
-   move.l    (a0)+, VDP_DATA
-   rts
 
 
 

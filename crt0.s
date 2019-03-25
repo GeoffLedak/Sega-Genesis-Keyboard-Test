@@ -167,9 +167,44 @@ hblank:
 vblank:
         movem.l d0-d1/a0-a1,-(sp)
         jsr _vint_callback
+
+lea     SpriteDesc1, a0     /* ; Sprite table data */
+jsr     LoadSpriteTables
+
         movem.l (sp)+, d0-d1/a0-a1
         addq.l  #1,gTicks
         rte
+
+
+
+
+
+.equ    VDP_DATA,                       0xC00000
+        .equ VDP_CONTROL,               0xC00004
+        .equ VDP_WRITE_SPRITE_TABLE,    0x68000002
+
+
+
+SpriteDesc1:
+dc.w 0x100            /* Y coord (+ 128) */
+dc.b 0b00000000        /* Width (bits 0-1) and height (bits 2-3) */
+dc.b 0x00              /* Index of next sprite (linked list) */
+dc.b 0x00              /* H/V flipping (bits 3/4), palette index (bits 5-6), priority (bit 7) */
+dc.b 0xDB              /* Index of first tile   (was Sprite1TileID) */
+dc.w 0x8F            /* X coord (+ 128) */
+
+
+
+LoadSpriteTables:
+  /* ; a0 - Sprite data address */
+
+   move.l    #VDP_WRITE_SPRITE_TABLE, (VDP_CONTROL)
+   move.l    (a0)+, VDP_DATA
+   move.l    (a0)+, VDP_DATA
+   rts
+
+
+
 
 
 
