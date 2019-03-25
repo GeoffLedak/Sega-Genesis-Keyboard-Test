@@ -398,14 +398,18 @@ syscall_PRINT_STRING:
         move.l  d1,4(a1)                /* write VRAM at location of cursor in plane B */
 1:
         move.b  (a0)+,d0
+        
+        cmpi.b #0x0A, d0                /* check if it is the enter key (0xA) */
+        beq.s newline                   /* if it is, then jump to newline subroutine */
+        
         move.w  d0,(a1)                 /* set pattern name for character */
 
         addi.l #1, xCursor
         cmpi.l #SCREEN_RIGHT_EDGE, xCursor		/* if xCursor is greater than SCREEN_RIGHT_EDGE */
-        bcc.s  newline					/* jump to newline */
+        bcc.s  newline				        	/* jump to newline */
 
 testend:
-	tst.b   (a0)
+	    tst.b   (a0)
         bne.b   1b
         rts
 
@@ -416,9 +420,9 @@ newline:
         cmpi.l  #0, scrollFlag                          /* if scrollFlag is greater than zero */
         bhi.s   scrollPlaneB                            /* jump to scrollPlaneB */
 
-	cmpi.l #SCREEN_BOTTOM_EDGE, yCursor		/* if yCursor is less than or equal to SCREEN_BOTTOM_EDGE */
-	bls.s 	shouldResetYcursor			/* jump to shouldResetYcursor */
-							/* ..otherwise scroll the screen down */
+	    cmpi.l #SCREEN_BOTTOM_EDGE, yCursor		        /* if yCursor is less than or equal to SCREEN_BOTTOM_EDGE */
+	    bls.s 	shouldResetYcursor			            /* jump to shouldResetYcursor */
+							                            /* ..otherwise scroll the screen down */
 scrollPlaneB:
 
         | clear top line
