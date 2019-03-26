@@ -42,8 +42,25 @@ char charBuffIndex = 0;
 
 
 
+typedef struct 
+{ 
+   short Ycoor;
+   char widthHeight;
+   char indexOfNext;
+   char hvFlipping;
+   char tileIndex;
+   short Xcoor;
+} CursorDesc;
+
+
+
+
+
+
 int main(void)
 {
+    
+
     // 0x0000 = grey
     // 0x2000 = green
     // 0x4000 = red
@@ -60,6 +77,24 @@ int main(void)
 
 
 
+
+
+
+
+
+CursorDesc cursorDesc = { 0x100, 0b00000000, 0x00, 0x00, 0xDB, 0x8F };
+
+long * VDP_DATA = (long *) 0xC00000;
+long * VDP_CONTROL = (long *) 0xC00004;
+long * VDP_WRITE_SPRITE_TABLE = (long *) 0x68000002;
+
+
+long * sandwich;
+
+
+
+
+
 void _vint_callback()	// Called During V-Blank Interrupt
 {
     readControllers();
@@ -73,7 +108,37 @@ void _vint_callback()	// Called During V-Blank Interrupt
         syscall_PRINT_STRING(charBuff, 0x0000);
         charBuffIndex = 0;
     }
+
+
+    // draw cursor
+/*
+    lea     SpriteDesc1, a0     ; Sprite table data 
+    jsr     LoadSpriteTables
+
+
+    LoadSpriteTables:
+    ; a0 - Sprite data address
+
+   move.l    #VDP_WRITE_SPRITE_TABLE, (VDP_CONTROL)
+   move.l    (a0)+, VDP_DATA
+   move.l    (a0)+, VDP_DATA
+   rts
+*/
+
+
+    sandwich = &cursorDesc;
+    *VDP_CONTROL = VDP_WRITE_SPRITE_TABLE;
+    *VDP_DATA = *sandwich;
+    sandwich++;
+    *VDP_DATA = *sandwich;
+
+
+
 }
+
+
+
+
 
 
 void ReadCharacters()
