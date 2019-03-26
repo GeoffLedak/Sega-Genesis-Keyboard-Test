@@ -54,7 +54,8 @@ typedef struct
 
 
 
-
+extern long xCursor;
+extern long yCursor;
 
 
 int main(void)
@@ -62,6 +63,9 @@ int main(void)
     // 0x0000 = grey
     // 0x2000 = green
     // 0x4000 = red
+
+
+    // xCursor = 32;
 
 
 	WaitForVBlank();
@@ -108,6 +112,10 @@ void _vint_callback()	// Called During V-Blank Interrupt
         charBuffIndex = 0;
     }
 
+
+
+    cursorDesc.Xcoor = ( xCursor * 8 ) + 128;
+    cursorDesc.Ycoor = ( yCursor * 8 ) + 128;
 
 
     cursorPointer = &cursorDesc;
