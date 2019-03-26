@@ -59,11 +59,10 @@ typedef struct
 
 int main(void)
 {
-    
-
     // 0x0000 = grey
     // 0x2000 = green
     // 0x4000 = red
+
 
 	WaitForVBlank();
 
@@ -89,7 +88,7 @@ long * VDP_CONTROL = (long *) 0xC00004;
 long * VDP_WRITE_SPRITE_TABLE = (long *) 0x68000002;
 
 
-long * sandwich;
+long * cursorPointer;
 
 
 
@@ -110,29 +109,12 @@ void _vint_callback()	// Called During V-Blank Interrupt
     }
 
 
-    // draw cursor
-/*
-    lea     SpriteDesc1, a0     ; Sprite table data 
-    jsr     LoadSpriteTables
 
-
-    LoadSpriteTables:
-    ; a0 - Sprite data address
-
-   move.l    #VDP_WRITE_SPRITE_TABLE, (VDP_CONTROL)
-   move.l    (a0)+, VDP_DATA
-   move.l    (a0)+, VDP_DATA
-   rts
-*/
-
-
-    sandwich = &cursorDesc;
+    cursorPointer = &cursorDesc;
     *VDP_CONTROL = VDP_WRITE_SPRITE_TABLE;
-    *VDP_DATA = *sandwich;
-    sandwich++;
-    *VDP_DATA = *sandwich;
-
-
+    *VDP_DATA = *cursorPointer;
+    cursorPointer++;
+    *VDP_DATA = *cursorPointer;
 
 }
 
