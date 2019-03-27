@@ -424,7 +424,7 @@ newline:
         bhi.s   scrollPlaneB                            /* jump to scrollPlaneB */
 
 	    cmpi.l #SCREEN_BOTTOM_EDGE, yCursor		        /* if yCursor is less than or equal to SCREEN_BOTTOM_EDGE */
-	    bls.s 	shouldResetYcursor			            /* jump to shouldResetYcursor */
+	    bls 	shouldResetYcursor			            /* jump to shouldResetYcursor */
 							                            /* ..otherwise scroll the screen down */
 scrollPlaneB:
 
