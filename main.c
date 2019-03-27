@@ -118,6 +118,9 @@ void _vint_callback()	// Called During V-Blank Interrupt
     cursorDesc.Xcoor = ( xCursor * 8 ) + 128;
     cursorDesc.Ycoor = ( yCursor * 8 ) + 128 - vScrollPos;
 
+    if( cursorDesc.Ycoor < 128 )
+        cursorDesc.Ycoor = (25 * 8) + 128;
+
 
     cursorPointer = &cursorDesc;
     *VDP_CONTROL = VDP_WRITE_SPRITE_TABLE;
