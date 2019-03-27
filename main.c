@@ -56,6 +56,7 @@ typedef struct
 
 extern long xCursor;
 extern long yCursor;
+extern long vScrollPos;
 
 
 int main(void)
@@ -115,7 +116,7 @@ void _vint_callback()	// Called During V-Blank Interrupt
 
 
     cursorDesc.Xcoor = ( xCursor * 8 ) + 128;
-    cursorDesc.Ycoor = ( yCursor * 8 ) + 128;
+    cursorDesc.Ycoor = ( yCursor * 8 ) + 128 - vScrollPos;
 
 
     cursorPointer = &cursorDesc;
