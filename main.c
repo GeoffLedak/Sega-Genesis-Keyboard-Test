@@ -104,7 +104,7 @@ void _vint_callback()	// Called During V-Blank Interrupt
     readControllers();
     readKeyboard();
 
-	if( globalCounter >= 60 ) globalCounter = 0;
+	if( globalCounter >= 20 ) globalCounter = 0;
 	else globalCounter++;
 
     if( charBuffIndex > 0 )
@@ -122,6 +122,13 @@ void _vint_callback()	// Called During V-Blank Interrupt
     // draw the cursor at the bottom of the screen
     if( cursorDesc.Ycoor < 128 )
         cursorDesc.Ycoor = (25 * 8) + 128;
+
+
+    if( globalCounter < 10 )
+        cursorDesc.tileIndex = 0xDB;
+    else
+        cursorDesc.tileIndex = 0x0;
+
 
 
     cursorPointer = &cursorDesc;
