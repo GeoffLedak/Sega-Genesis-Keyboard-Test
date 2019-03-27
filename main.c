@@ -118,6 +118,8 @@ void _vint_callback()	// Called During V-Blank Interrupt
     cursorDesc.Xcoor = ( xCursor * 8 ) + 128;
     cursorDesc.Ycoor = ( yCursor * 8 ) + 128 - vScrollPos;
 
+    // if subtracting vScrollPos causes cursor to be drawn off screen
+    // draw the cursor at the bottom of the screen
     if( cursorDesc.Ycoor < 128 )
         cursorDesc.Ycoor = (25 * 8) + 128;
 
