@@ -86,7 +86,7 @@ int main(void)
 
 
 
-CursorDesc cursorDesc = { 0x100, 0b00000000, 0x00, 0x00, 0xDB, 0x8F };
+CursorDesc cursorDesc = { 0x100, 0b00000000, 0x00, 0x00, 0xFF, 0x8F };
 
 long * VDP_DATA = (long *) 0xC00000;
 long * VDP_CONTROL = (long *) 0xC00004;
@@ -104,7 +104,7 @@ void _vint_callback()	// Called During V-Blank Interrupt
     readControllers();
     readKeyboard();
 
-	if( globalCounter >= 20 ) globalCounter = 0;
+	if( globalCounter >= 16 ) globalCounter = 0;
 	else globalCounter++;
 
     if( charBuffIndex > 0 )
@@ -124,8 +124,8 @@ void _vint_callback()	// Called During V-Blank Interrupt
         cursorDesc.Ycoor = (25 * 8) + 128;
 
 
-    if( globalCounter < 10 )
-        cursorDesc.tileIndex = 0xDB;
+    if( globalCounter < 8 )
+        cursorDesc.tileIndex = 0xFF;
     else
         cursorDesc.tileIndex = 0x0;
 
