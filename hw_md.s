@@ -14,6 +14,18 @@
 		.equ SCREEN_TOP_EDGE,			2
 		.equ SCREEN_BOTTOM_EDGE,		25
 		.equ PLANE_VERTICAL_EDGE,		31				| 0 - 31
+        
+        .equ SERIAL_CONTROL_P1          0xA10013
+        .equ RX_DATA_P1                 0xA10011
+        .equ TX_DATA_P1                 0xA1000F
+        
+        .equ SERIAL_CONTROL_P2          0xA10019
+        .equ RX_DATA_P2                 0xA10017
+        .equ TX_DATA_P2                 0xA10015
+        
+        .equ SERIAL_CONTROL_P3          0xA1001F
+        .equ RX_DATA_P3                 0xA1001D
+        .equ TX_DATA_P3                 0xA1001B
 
 
 
