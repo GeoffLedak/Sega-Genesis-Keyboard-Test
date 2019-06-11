@@ -63,10 +63,11 @@ extern long vScrollPos;
 
 
 
-long * SERIAL_CONTROL_P1 = (long *) 0xA10013;
-long * RX_DATA_P1 = (long *) 0xA10011;
-long * TX_DATA_P1 = (long *) 0xA1000F;
+volatile unsigned char *SERIAL_CONTROL_P1 = (char*) 0xA10013;
+volatile unsigned char *RX_DATA_P1 = (char*) 0xA10011;
+volatile unsigned char *TX_DATA_P1 = (char*) 0xA1000F;
 
+/*
 long * SERIAL_CONTROL_P2 = (long *) 0xA10019;
 long * RX_DATA_P2 = (long *) 0xA10017;
 long * TX_DATA_P2 = (long *) 0xA10015;
@@ -74,11 +75,12 @@ long * TX_DATA_P2 = (long *) 0xA10015;
 long * SERIAL_CONTROL_P3 = (long *) 0xA1001F;
 long * RX_DATA_P3 = (long *) 0xA1001D;
 long * TX_DATA_P3 = (long *) 0xA1001B;
+*/
 
 
-long SERIAL_1200BPS = 0b10 << 6;
-long SERIAL_ENABLE = 0b11 << 4;
-long SERIAL_INTOK = 0b1 << 3;
+unsigned char SERIAL_1200BPS = 0b10 << 6;
+unsigned char SERIAL_ENABLE = 0b11 << 4;
+unsigned char SERIAL_INTOK = 0b1 << 3;
 
 
 
@@ -209,7 +211,7 @@ void ReadCharacters()
 {
     short command = 0;
 
-    char keyPress = 0;
+    unsigned char keyPress = 0;
     short result = 0;
     unsigned char HWKeypress;
     long hwflags;
