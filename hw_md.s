@@ -15,20 +15,6 @@
 		.equ SCREEN_BOTTOM_EDGE,		25
 		.equ PLANE_VERTICAL_EDGE,		31				| 0 - 31
         
-        .equ SERIAL_CONTROL_P1          0xA10013
-        .equ RX_DATA_P1                 0xA10011
-        .equ TX_DATA_P1                 0xA1000F
-        
-        .equ SERIAL_CONTROL_P2          0xA10019
-        .equ RX_DATA_P2                 0xA10017
-        .equ TX_DATA_P2                 0xA10015
-        
-        .equ SERIAL_CONTROL_P3          0xA1001F
-        .equ RX_DATA_P3                 0xA1001D
-        .equ TX_DATA_P3                 0xA1001B
-
-
-
 
 | Initialize the hardware & load font tiles
         .global init_hardware
@@ -178,7 +164,7 @@ InitVDPRegs:
         .byte   0x00    /* 8800 => write reg 8 = always 0 */
         .byte   0x00    /* 8900 => write reg 9 = always 0 */
         .byte   0x00    /* 8A00 => write reg 10 = HINT = 0 */
-        .byte   0x00    /* 8B00 => write reg 11 = /IE2 (no EXT INT), full scroll */
+        .byte   0x08    /* 8B08 => write reg 11 = /IE2 (enable EXT INT), full scroll */
         .byte   0x81    /* 8C81 => write reg 12 = H40 mode, no lace, no shadow/hilite */
         .byte   0x2B    /* 8D2B => write reg 13 = HScroll Tbl = 0xAC00 */
         .byte   0x00    /* 8E00 => write reg 14 = always 0 */

@@ -24,6 +24,7 @@ unsigned char GetNextESKeyboardChar( void );
 unsigned char GetNextESKeyboardRawcode( void );
 void BackUpKeycodeTail();
 
+void _external_callback();
 void _vint_callback();
 
 char keyboardConnected = 0;
@@ -59,6 +60,30 @@ extern long yCursor;
 extern long vScrollPos;
 
 
+
+
+
+long * SERIAL_CONTROL_P1 = (long *) 0xA10013;
+long * RX_DATA_P1 = (long *) 0xA10011;
+long * TX_DATA_P1 = (long *) 0xA1000F;
+
+long * SERIAL_CONTROL_P2 = (long *) 0xA10019;
+long * RX_DATA_P2 = (long *) 0xA10017;
+long * TX_DATA_P2 = (long *) 0xA10015;
+
+long * SERIAL_CONTROL_P3 = (long *) 0xA1001F;
+long * RX_DATA_P3 = (long *) 0xA1001D;
+long * TX_DATA_P3 = (long *) 0xA1001B;
+
+
+long SERIAL_1200BPS = 0b10 << 6;
+long SERIAL_ENABLE = 0b11 << 4;
+long SERIAL_INTOK = 0b1 << 3;
+
+
+
+
+
 int main(void)
 {
     // 0x0000 = grey
@@ -70,6 +95,14 @@ int main(void)
 
 
 	WaitForVBlank();
+    
+    
+    // 0b 10 11 10 00  =  1200 bps, enable serial mode on TR and TL, enable external interrupt, nothing
+    // *SERIAL_CONTROL_P1 = 0b10111000;
+
+    *SERIAL_CONTROL_P1 = SERIAL_1200BPS|SERIAL_ENABLE|SERIAL_INTOK;
+    
+    
 
     while ( 1 ) // endless loop
     {	
@@ -84,6 +117,35 @@ int main(void)
 
 
 
+void _external_callback()   // Called during External Interrupt
+{
+    // syscall_PRINT_STRING("a", 0x0000);
+    
+    // check if a byte is available:
+
+    register long timeout = 100;
+    
+    do { }
+    while (  ( ( (*SERIAL_CONTROL_P1 >> 1 ) & 0b00000011 ) != 0b01 ) && --timeout );
+
+    if ( !timeout )
+    {
+        return;
+    }
+    
+    // add the byte to the buffer
+    if( charBuffIndex < 15 )
+    {
+        charBuff[charBuffIndex] = *RX_DATA_P1;
+        charBuffIndex++;
+        charBuff[charBuffIndex] = '\0';
+    }
+            
+}
+
+
+
+
 
 
 CursorDesc cursorDesc = { 0x100, 0b00000000, 0x00, 0x00, 0xFF, 0x8F };
@@ -94,7 +156,6 @@ long * VDP_WRITE_SPRITE_TABLE = (long *) 0x68000002;
 
 
 long * cursorPointer;
-
 
 
 
@@ -205,12 +266,47 @@ void ReadCharacters()
         if (keyPress == '\n' || keyPress >= ' ')
         {
 
+
+
+
+
+/*
+
             if( charBuffIndex < 15 )
             {
                 charBuff[charBuffIndex] = keyPress;
                 charBuffIndex++;
                 charBuff[charBuffIndex] = '\0';
             }
+            
+*/
+
+            // !!!=====================================================!!!
+            
+            // Instead of adding keyPress to charBuff like above,
+            // serial write it to the PC
+            
+            // !!!======================================================!!!
+            
+            
+           
+            // poll bit 0 of control register until it is equal to 0
+            // write the byte to the TxData register
+            
+            register long timeout = 100;
+    
+            do { }
+            while (  ( ( *SERIAL_CONTROL_P1 & 0b00000001 ) != 0b0 ) && --timeout );
+
+            if ( !timeout )
+            {
+                return;
+            }
+            
+            *TX_DATA_P1 = keyPress;
+            
+            
+            
 
 
             // =======================================
