@@ -86,8 +86,41 @@ unsigned char SERIAL_INTOK = 0b1 << 3;
 
 
 
+
+
+typedef unsigned char       UChar;
+typedef unsigned long       ULong;
+
+#define kData2      0xA10005
+#define kCtl2       0xA1000B
+#define kSerial2    0xA10019
+
+
+#define	kData1		0xA10003
+#define	kCtrl		0xA10009		
+
+
+
+#define kTH         0x40            // controller mode control line
+#define kTR         0x20            // controller handshake request
+#define kTL         0x10            // controller handshake acknowledge
+
+#define kDataLines  0x0F            // data lines for 3-line hshk communication
+
+#define nop          __asm__ __volatile__ ("nop\n\t");
+
+
+
+
+
+
+
+
 int main(void)
 {
+    volatile register UChar* reg = (UChar*) kData1; // only support keyboard on PORT 2!
+    
+    
     // 0x0000 = grey
     // 0x2000 = green
     // 0x4000 = red
@@ -97,6 +130,18 @@ int main(void)
 
 
 	WaitForVBlank();
+    
+    
+    *(char *)kCtrl = 0x80; // set bit 7
+    
+    *(reg) &= ~kTR; // TR low
+    *(char *)kCtrl &= ~kTR; // make TH an input
+    
+
+    
+    
+    
+    
     
     
     // 0b 10 11 10 00  =  1200 bps, enable serial mode on TR and TL, enable external interrupt, nothing
@@ -121,8 +166,6 @@ int main(void)
 
 void _external_callback()   // Called during External Interrupt
 {
-    // syscall_PRINT_STRING("a", 0x0000);
-    
     // check if a byte is available:
 
     register long timeout = 100;
@@ -141,8 +184,7 @@ void _external_callback()   // Called during External Interrupt
         charBuff[charBuffIndex] = *RX_DATA_P1;
         charBuffIndex++;
         charBuff[charBuffIndex] = '\0';
-    }
-            
+    }    
 }
 
 
@@ -464,20 +506,9 @@ void readKeyboard() {
 
 
 
-typedef unsigned char       UChar;
-typedef unsigned long       ULong;
 
-#define kData2      0xA10005
-#define kCtl2       0xA1000B
-#define kSerial2    0xA10019
 
-#define kTH         0x40            // controller mode control line
-#define kTR         0x20            // controller handshake request
-#define kTL         0x10            // controller handshake acknowledge
 
-#define kDataLines  0x0F            // data lines for 3-line hshk communication
-
-#define nop          __asm__ __volatile__ ("nop\n\t");
 
 int FindESKeyboard(void) {
     UChar readBuf[4];
